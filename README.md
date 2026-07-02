@@ -59,7 +59,6 @@ src/main/java/com/hertz/
 Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ util/                               # Constants
 
 dynamodb/                               # Table creation JSON + seed data batch scripts
-devops/                                 # Jenkinsfile, CI/CD pipeline configs
 ```
 
 ## API Endpoints
