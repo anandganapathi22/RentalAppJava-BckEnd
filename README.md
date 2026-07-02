@@ -61,6 +61,20 @@ src/main/java/com/rentalapps/
 
 ## API Endpoints
 
+## Architecture Console
+
+The app serves a local architecture console at `/` and `/admin`. It models the Kafka-based target architecture with
+local topic counters, event publishing, display projections, and audit history.
+
+Key endpoints:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/architecture/overview` | Topic counters, customer-state counts, and recent local events |
+| POST | `/api/architecture/events` | Publish a US/EU rental event through the local architecture flow |
+| GET | `/api/architecture/display/{region}` | Display/API projection for `US` or `EU`, optionally filtered by `locationId` |
+| GET | `/api/architecture/audit?limit={n}` | Recent audit records from the audit table |
+
 ### Customer
 
 | Method | Endpoint | Description |
