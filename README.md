@@ -57,8 +57,6 @@ src/main/java/com/hertz/
 Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ scheduler/                          # CustomerDeletionJobScheduler
 Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ service/                            # CustomerDataService, EventService, EventServiceImpl
 Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ util/                               # Constants
-
-dynamodb/                               # Table creation JSON + seed data batch scripts
 ```
 
 ## API Endpoints
@@ -184,23 +182,6 @@ Or run `RentalAppsListenerApplication.main()` from your IDE.
 2. Copy the `build/` output into `src/main/resources/static/` in this project.
 
 The `RentalAppsAdminController` serves `/index.html` for `/`, `/admin`, and `/admin/{path}` routes.
-
-## DynamoDB Setup
-
-Scripts are in `dynamodb/`. See [`dynamodb/readme.txt`](dynamodb/readme.txt) for full instructions.
-
-```bash
-# Create tables
-aws dynamodb create-table --cli-input-json file://dynamodb/gbcustomer_createtable.json --profile <profile>
-aws dynamodb create-table --cli-input-json file://dynamodb/gblocations_createtable.json --profile <profile>
-
-# Seed location data
-aws dynamodb batch-write-item --request-items file://dynamodb/gblocation_insert_batch1_v1.0.json --profile <profile>
-aws dynamodb batch-write-item --request-items file://dynamodb/gblocation_insert_batch2_v1.0.json --profile <profile>
-aws dynamodb batch-write-item --request-items file://dynamodb/gblocation_insert_batch3_v1.0.json --profile <profile>
-```
-
-> **Note:** Replace the table name on line 2 of each batch JSON to match the target environment (e.g., `rentalapps-locations-stage-783654729643-use1-data`).
 
 ## Actuator Endpoints
 
