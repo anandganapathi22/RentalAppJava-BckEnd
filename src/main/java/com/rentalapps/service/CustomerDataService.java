@@ -145,6 +145,23 @@ public class CustomerDataService {
     return resp;
   }
 
+  /** Retrieves all configured locations. */
+  public List<GbLocationRespObj> getLocations()
+      throws DatabaseException, ServiceException {
+
+    logger.info("Start of com.rentalapps.service.getLocations () ...");
+
+    List<GbLocationRespObj> resp = dbService.getLocations();
+
+    if (resp == null || resp.size() == 0) {
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE8,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE9, DatabaseConstants.HTTP_CODE_404);
+    }
+    logger.info("End of com.rentalapps.service.getLocations () ...");
+    return resp;
+  }
+
   /** Retrieves multiple locations by their codes. */
   public List<GbLocationRespObj> getLocationList(List<String> locationIds) 
       throws DatabaseException, ServiceException {

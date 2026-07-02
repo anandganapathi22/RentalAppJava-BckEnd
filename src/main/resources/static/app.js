@@ -1,125 +1,235 @@
-const apiStatus = document.querySelector('#apiStatus');
-const usCount = document.querySelector('#usCount');
-const euCount = document.querySelector('#euCount');
-const totalCount = document.querySelector('#totalCount');
-const topicBand = document.querySelector('#topicBand');
-const recentEvents = document.querySelector('#recentEvents');
-const displayRows = document.querySelector('#displayRows');
-const auditRows = document.querySelector('#auditRows');
-const publishResult = document.querySelector('#publishResult');
+(function () {
+  const { useEffect, useMemo, useState } = React;
 
-async function fetchJson(url, options = {}) {
-  const response = await fetch(url, {
-    headers: {'Content-Type': 'application/json'},
-    ...options
+  const fallbackLocations = Array.from({ length: 200 }, (_, index) => {
+    const code = `LOC${String(index + 1).padStart(3, "0")}`;
+    return {
+      hertzLocationCode: code,
+      displayName: `RentalApps Location ${String(index + 1).padStart(3, "0")}`,
+      timeZone: ""
+    };
   });
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || response.statusText);
+
+  function normalizeCustomerPayload(payload) {
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+    if (Array.isArray(payload?.value)) {
+      return payload.value;
+    }
+    return [];
   }
-  return response.json();
-}
 
-function setStatus(ok) {
-  apiStatus.classList.toggle('ok', ok);
-}
-
-function renderTopics(topics) {
-  topicBand.innerHTML = topics.map(topic => `
-    <article class="topic-card">
-      <b>${topic.name}</b>
-      <span>${topic.description}</span>
-      <strong>${topic.eventCount}</strong>
-    </article>
-  `).join('');
-}
-
-function renderRecent(events) {
-  recentEvents.innerHTML = events.length ? events.map(event => `
-    <article class="event-item">
-      <b>${event.topic}</b> <span>${event.eventType || ''}</span><br>
-      ${event.locationCode || '-'} ${event.customerName || ''}<br>
-      <span>${event.source} / ${event.region} / ${new Date(event.timestamp).toLocaleString()}</span>
-    </article>
-  `).join('') : '<p>No local events published yet.</p>';
-}
-
-function renderDisplay(rows) {
-  displayRows.innerHTML = rows.length ? rows.slice(0, 80).map(row => `
-    <tr>
-      <td>${row.locationCode || ''}</td>
-      <td>${row.customerName || ''}</td>
-      <td>${row.stall || ''}</td>
-      <td>${row.ra || ''}</td>
-    </tr>
-  `).join('') : '<tr><td colspan="4">No records found.</td></tr>';
-}
-
-function renderAudit(rows) {
-  auditRows.innerHTML = rows.length ? rows.map(row => `
-    <article class="audit-item">
-      <b>${row.operation || 'event'}</b> ${row.customerName || ''}<br>
-      ${row.locationCode || '-'} / ${row.stall || '-'} / ${row.sourceSystem || '-'}<br>
-      <span>${row.operationTime || ''}</span>
-    </article>
-  `).join('') : '<p>No audit events found.</p>';
-}
-
-async function loadOverview() {
-  try {
-    const data = await fetchJson('/api/architecture/overview');
-    usCount.textContent = data.usCustomerCount;
-    euCount.textContent = data.euCustomerCount;
-    totalCount.textContent = data.totalCustomerCount;
-    renderTopics(data.topics || []);
-    renderRecent(data.recentEvents || []);
-    setStatus(true);
-  } catch (error) {
-    setStatus(false);
-    recentEvents.innerHTML = `<p>${error.message}</p>`;
+  async function fetchJson(url) {
+    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    if (response.status === 204 || response.status === 404) {
+      return [];
+    }
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
+    }
+    return response.json();
   }
-}
 
-async function loadDisplay() {
-  const region = document.querySelector('#displayRegion').value;
-  const locationId = document.querySelector('#displayLocation').value.trim();
-  const query = locationId ? `?locationId=${encodeURIComponent(locationId)}` : '';
-  const rows = await fetchJson(`/api/architecture/display/${region}${query}`);
-  renderDisplay(rows);
-}
+  function App() {
+    const [locations, setLocations] = useState([]);
+    const [selectedLocation, setSelectedLocation] = useState("LOC001");
+    const [customers, setCustomers] = useState([]);
+    const [loadingLocations, setLoadingLocations] = useState(true);
+    const [loadingCustomers, setLoadingCustomers] = useState(false);
+    const [error, setError] = useState("");
 
-async function loadAudit() {
-  const rows = await fetchJson('/api/architecture/audit?limit=25');
-  renderAudit(rows);
-}
+    useEffect(() => {
+      let cancelled = false;
 
-document.querySelector('#refreshBtn').addEventListener('click', () => {
-  loadOverview();
-  loadDisplay();
-  loadAudit();
-});
+      async function loadLocations() {
+        setLoadingLocations(true);
+        try {
+          const payload = await fetchJson("/admin/locations");
+          const data = Array.isArray(payload?.data) && payload.data.length > 0
+            ? payload.data
+            : fallbackLocations;
+          if (!cancelled) {
+            setLocations(data);
+            setSelectedLocation(data[0]?.hertzLocationCode || "LOC001");
+          }
+        } catch (loadError) {
+          if (!cancelled) {
+            setLocations(fallbackLocations);
+            setSelectedLocation("LOC001");
+          }
+        } finally {
+          if (!cancelled) {
+            setLoadingLocations(false);
+          }
+        }
+      }
 
-document.querySelector('#loadDisplayBtn').addEventListener('click', loadDisplay);
-document.querySelector('#loadAuditBtn').addEventListener('click', loadAudit);
+      loadLocations();
+      return () => {
+        cancelled = true;
+      };
+    }, []);
 
-document.querySelector('#eventForm').addEventListener('submit', async event => {
-  event.preventDefault();
-  publishResult.textContent = '';
-  const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
-  try {
-    const result = await fetchJson('/api/architecture/events', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
-    publishResult.textContent = `${result.inboundTopic} -> ${result.displayTopic}`;
-    await loadOverview();
-    await loadDisplay();
-    await loadAudit();
-  } catch (error) {
-    publishResult.textContent = error.message;
+    useEffect(() => {
+      if (!selectedLocation) {
+        return;
+      }
+
+      let cancelled = false;
+
+      async function loadCustomers() {
+        setLoadingCustomers(true);
+        setError("");
+        try {
+          const payload = await fetchJson(`/StallDetails2?locationId=${encodeURIComponent(selectedLocation)}`);
+          if (!cancelled) {
+            setCustomers(normalizeCustomerPayload(payload));
+          }
+        } catch (loadError) {
+          if (!cancelled) {
+            setCustomers([]);
+            setError("Customer details are unavailable for the selected location.");
+          }
+        } finally {
+          if (!cancelled) {
+            setLoadingCustomers(false);
+          }
+        }
+      }
+
+      loadCustomers();
+      return () => {
+        cancelled = true;
+      };
+    }, [selectedLocation]);
+
+    const selectedLocationDetails = useMemo(
+      () => locations.find((location) => location.hertzLocationCode === selectedLocation),
+      [locations, selectedLocation]
+    );
+
+    const sortedCustomers = useMemo(
+      () => [...customers].sort((left, right) => (left.customerName || "").localeCompare(right.customerName || "")),
+      [customers]
+    );
+
+    return React.createElement(
+      "main",
+      { className: "app-shell" },
+      React.createElement(
+        "section",
+        { className: "masthead" },
+        React.createElement(
+          "div",
+          { className: "masthead-copy" },
+          React.createElement("p", { className: "eyebrow" }, "Rental Applications"),
+          React.createElement("h1", null, "Customer Stall Board"),
+          React.createElement("p", { className: "summary" }, "Live location view for rental customer assignments.")
+        ),
+        React.createElement(
+          "div",
+          { className: "location-panel" },
+          React.createElement("label", { htmlFor: "location-select" }, "Location"),
+          React.createElement(
+            "select",
+            {
+              id: "location-select",
+              value: selectedLocation,
+              disabled: loadingLocations,
+              onChange: (event) => setSelectedLocation(event.target.value)
+            },
+            locations.map((location) =>
+              React.createElement(
+                "option",
+                { key: location.hertzLocationCode, value: location.hertzLocationCode },
+                `${location.hertzLocationCode} - ${location.displayName || location.hertzLocationCode}`
+              )
+            )
+          ),
+          React.createElement(
+            "div",
+            { className: "location-meta" },
+            React.createElement("span", null, selectedLocationDetails?.timeZone || "Local database"),
+            React.createElement("strong", null, `${sortedCustomers.length} records`)
+          )
+        )
+      ),
+      React.createElement(
+        "section",
+        { className: "content-band" },
+        React.createElement(
+          "div",
+          { className: "toolbar" },
+          React.createElement(
+            "div",
+            null,
+            React.createElement("h2", null, selectedLocation || "Location"),
+            React.createElement("p", null, selectedLocationDetails?.displayName || "")
+          ),
+          React.createElement("div", { className: "status-pill" }, loadingCustomers ? "Loading" : "Current")
+        ),
+        error && React.createElement("div", { className: "notice error" }, error),
+        !error && !loadingCustomers && sortedCustomers.length === 0
+          ? React.createElement("div", { className: "notice" }, "No customer records found for this location.")
+          : React.createElement(CustomerTable, { customers: sortedCustomers, loading: loadingCustomers })
+      )
+    );
   }
-});
 
-loadOverview();
-loadDisplay();
-loadAudit();
+  function CustomerTable({ customers, loading }) {
+    const skeletonRows = Array.from({ length: 5 }, (_, index) => index);
+
+    return React.createElement(
+      "div",
+      { className: "table-wrap" },
+      React.createElement(
+        "table",
+        null,
+        React.createElement(
+          "thead",
+          null,
+          React.createElement(
+            "tr",
+            null,
+            ["Customer", "Stall", "One Club", "RA", "Arrival", "Updated"].map((heading) =>
+              React.createElement("th", { key: heading }, heading)
+            )
+          )
+        ),
+        React.createElement(
+          "tbody",
+          null,
+          loading
+            ? skeletonRows.map((row) =>
+                React.createElement(
+                  "tr",
+                  { key: row },
+                  Array.from({ length: 6 }, (_, cell) =>
+                    React.createElement(
+                      "td",
+                      { key: cell },
+                      React.createElement("span", { className: "skeleton" })
+                    )
+                  )
+                )
+              )
+            : customers.map((customer) =>
+                React.createElement(
+                  "tr",
+                  { key: customer.id || `${customer.locationCode}-${customer.customerName}-${customer.ra}` },
+                  React.createElement("td", { className: "customer-name" }, customer.customerName || "-"),
+                  React.createElement("td", null, React.createElement("span", { className: "stall-badge" }, customer.stall || "-")),
+                  React.createElement("td", null, customer.oneClub || "-"),
+                  React.createElement("td", null, customer.ra || "-"),
+                  React.createElement("td", null, [customer.arrivalDate, customer.arrivalTime].filter(Boolean).join(" ") || "-"),
+                  React.createElement("td", null, customer.updatedDateTime || customer.createdDateTime || "-")
+                )
+              )
+        )
+      )
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+})();
