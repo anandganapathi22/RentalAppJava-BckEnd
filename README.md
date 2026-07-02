@@ -45,18 +45,18 @@ CwaQueueConsumer Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€
 ## Project Structure
 
 ```
-src/main/java/com/hertz/
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ RentalAppsListenerApplication.java   # @SpringBootApplication, @EnableJms, @EnableScheduling
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ config/                             # ApplicationConfig, AwsConfig, KinesisConfig, Security
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ configmq/                           # IBM MQ ConnectionFactory (primary + secondary)
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ consumer/                           # CwaQueueConsumer Ã¢â‚¬â€ JMS listener
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ database/                           # DbService, DbRetentionService, DTOs, exceptions, Utils
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ exception/                          # @ControllerAdvice global exception handlers
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ model/                              # Rental, CustomerBean, CwaMessageBean, Event, EventType
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ restcontroller/                     # RentalAppsController (REST), RentalAppsAdminController (UI)
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ scheduler/                          # CustomerDeletionJobScheduler
-Ã¢â€Å“Ã¢â€â‚¬Ã¢â€â‚¬ service/                            # CustomerDataService, EventService, EventServiceImpl
-Ã¢â€â€Ã¢â€â‚¬Ã¢â€â‚¬ util/                               # Constants
+src/main/java/com/rentalapps/
+  RentalAppsListenerApplication.java   # Spring Boot entry point
+  config/                              # application, security, database, and scheduler config
+  configmq/                            # IBM MQ connection factory setup
+  consumer/                            # inbound MQ consumers
+  controller/                          # REST and UI controllers
+  exception/                           # application exceptions and global handlers
+  model/                               # domain/event models
+  scheduler/                           # scheduled jobs
+  service/                             # business and persistence services
+  util/                                # constants and utility helpers
+  vo/                                  # request, response, and value objects
 ```
 
 ## API Endpoints

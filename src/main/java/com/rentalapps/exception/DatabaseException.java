@@ -1,4 +1,4 @@
-package com.rentalapps.database;
+package com.rentalapps.exception;
 
 /**
  * Exception thrown when a database operation fails.

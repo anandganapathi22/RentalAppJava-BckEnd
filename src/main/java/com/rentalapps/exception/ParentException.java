@@ -1,4 +1,4 @@
-package com.rentalapps.database;
+package com.rentalapps.exception;
 
 /**
  * Base exception class for the application, carrying structured error details

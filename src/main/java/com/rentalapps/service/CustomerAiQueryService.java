@@ -2,8 +2,8 @@ package com.rentalapps.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rentalapps.model.AiCustomerQueryResponse;
-import com.rentalapps.model.CustomerBean;
+import com.rentalapps.vo.AiCustomerQueryResponse;
+import com.rentalapps.vo.CustomerBean;
 import java.io.IOException;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;

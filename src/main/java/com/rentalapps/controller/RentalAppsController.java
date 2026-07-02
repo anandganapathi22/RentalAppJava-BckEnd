@@ -1,20 +1,20 @@
-package com.rentalapps.restcontroller;
+package com.rentalapps.controller;
 
-import com.rentalapps.database.Constants;
-import com.rentalapps.database.DatabaseException;
-import com.rentalapps.database.GbLocationReqObj;
-import com.rentalapps.database.GbLocationRespObj;
-import com.rentalapps.database.ServiceException;
-import com.rentalapps.database.SuccessRespObj;
+import com.rentalapps.util.DatabaseConstants;
+import com.rentalapps.exception.DatabaseException;
+import com.rentalapps.vo.GbLocationReqObj;
+import com.rentalapps.vo.GbLocationRespObj;
+import com.rentalapps.exception.ServiceException;
+import com.rentalapps.vo.SuccessRespObj;
 import com.rentalapps.exception.ApplicationException;
 import com.rentalapps.exception.NoContentException;
-import com.rentalapps.model.CorrelationBean;
-import com.rentalapps.model.AiCustomerQueryRequest;
-import com.rentalapps.model.CustomerBean;
-import com.rentalapps.model.CustomerBeanLite;
+import com.rentalapps.vo.CorrelationBean;
+import com.rentalapps.vo.AiCustomerQueryRequest;
+import com.rentalapps.vo.CustomerBean;
+import com.rentalapps.vo.CustomerBeanLite;
 import com.rentalapps.model.CwaMessageBean;
-import com.rentalapps.model.AiCustomerQueryResponse;
-import com.rentalapps.model.LocaltimeBean;
+import com.rentalapps.vo.AiCustomerQueryResponse;
+import com.rentalapps.vo.LocaltimeBean;
 import com.rentalapps.model.Rental;
 import com.rentalapps.service.CustomerAiQueryService;
 import com.rentalapps.service.CustomerDataService;
@@ -138,15 +138,15 @@ public class RentalAppsController {
   public ResponseEntity<SuccessRespObj> addLocation(@RequestBody GbLocationReqObj inputLocation) 
       throws DatabaseException {
 
-    logger.info("Start of com.rentalapps.restcontroller.addLocation () ...");
+    logger.info("Start of com.rentalapps.controller.addLocation () ...");
     
     List<GbLocationRespObj> data = new ArrayList<>();
     data.add(customerDataService.addLocation(inputLocation));
     SuccessRespObj resp = new SuccessRespObj();
     resp.setData(data);
-    resp.setMessage(Constants.ADD_LOCATION_SUCCESS_MESSAGE);
+    resp.setMessage(DatabaseConstants.ADD_LOCATION_SUCCESS_MESSAGE);
     
-    logger.info("End of com.rentalapps.restcontroller.addLocation () ...");
+    logger.info("End of com.rentalapps.controller.addLocation () ...");
     return new ResponseEntity<SuccessRespObj>(resp, HttpStatus.OK);
   }  
 
@@ -155,15 +155,15 @@ public class RentalAppsController {
   public ResponseEntity<SuccessRespObj> updateLocation(@RequestBody GbLocationReqObj inputLocation) 
       throws DatabaseException {
 
-    logger.info("Start of com.rentalapps.restcontroller.updateLocation () ...");
+    logger.info("Start of com.rentalapps.controller.updateLocation () ...");
 
     List<GbLocationRespObj> data = new ArrayList<>();
     data.add(customerDataService.updateLocation(inputLocation));
     SuccessRespObj resp = new SuccessRespObj();
     resp.setData(data);
-    resp.setMessage(Constants.UPDATE_LOCATION_SUCCESS_MESSAGE);
+    resp.setMessage(DatabaseConstants.UPDATE_LOCATION_SUCCESS_MESSAGE);
     
-    logger.info("End of com.rentalapps.restcontroller.updateLocation () ...");
+    logger.info("End of com.rentalapps.controller.updateLocation () ...");
     return new ResponseEntity<SuccessRespObj>(resp, HttpStatus.OK);
   }  
 
@@ -171,15 +171,15 @@ public class RentalAppsController {
   @RequestMapping(value = "/admin/locations", method = RequestMethod.DELETE, produces = "application/json")
   public ResponseEntity<Object> removeLocation(@RequestBody GbLocationReqObj inputLocation) throws DatabaseException {
 
-    logger.info("Start of com.rentalapps.restcontroller.removeLocation () ...");
+    logger.info("Start of com.rentalapps.controller.removeLocation () ...");
 
     List<GbLocationRespObj> data = new ArrayList<>();
     data.add(customerDataService.removeLocation(inputLocation));
     SuccessRespObj resp = new SuccessRespObj();
     resp.setData(data);
-    resp.setMessage(Constants.DELETE_LOCATION_SUCCESS_MESSAGE);
+    resp.setMessage(DatabaseConstants.DELETE_LOCATION_SUCCESS_MESSAGE);
     
-    logger.info("End of com.rentalapps.restcontroller.removeLocation () ...");
+    logger.info("End of com.rentalapps.controller.removeLocation () ...");
     return new ResponseEntity<>(resp, HttpStatus.OK);
   }  
 
@@ -188,15 +188,15 @@ public class RentalAppsController {
   public ResponseEntity<SuccessRespObj> getLocation(@PathVariable String id) 
       throws DatabaseException, ServiceException {
     
-    logger.info("Start of com.rentalapps.restcontroller.getLocation () ...");
+    logger.info("Start of com.rentalapps.controller.getLocation () ...");
     
     logger.info("id = ", id);
     List<GbLocationRespObj> data = customerDataService.getLocation(id);
     SuccessRespObj resp = new SuccessRespObj();
     resp.setData(data);
-    resp.setMessage(Constants.GET_LOCATION_SUCCESS_MESSAGE);
+    resp.setMessage(DatabaseConstants.GET_LOCATION_SUCCESS_MESSAGE);
     
-    logger.info("End of com.rentalapps.restcontroller.getLocation () ...");
+    logger.info("End of com.rentalapps.controller.getLocation () ...");
     return new ResponseEntity<SuccessRespObj>(resp, HttpStatus.OK);
   }  
 
@@ -205,15 +205,15 @@ public class RentalAppsController {
   public ResponseEntity<SuccessRespObj> getLocationList(@PathVariable List<String> ids) 
       throws DatabaseException, ServiceException {
     
-    logger.info("Start of com.rentalapps.restcontroller.getLocationList () ...");
+    logger.info("Start of com.rentalapps.controller.getLocationList () ...");
     
     logger.info("ids = ", ids.stream().collect(Collectors.joining(" ")));
     List<GbLocationRespObj> data = customerDataService.getLocationList(ids);
     SuccessRespObj resp = new SuccessRespObj();
     resp.setData(data);
-    resp.setMessage(Constants.GET_LOCATION_SUCCESS_MESSAGE);
+    resp.setMessage(DatabaseConstants.GET_LOCATION_SUCCESS_MESSAGE);
     
-    logger.info("End of com.rentalapps.restcontroller.getLocationList () ...");
+    logger.info("End of com.rentalapps.controller.getLocationList () ...");
     return new ResponseEntity<SuccessRespObj>(resp, HttpStatus.OK);
   }  
 

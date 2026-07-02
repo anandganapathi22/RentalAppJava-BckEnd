@@ -4,23 +4,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rentalapps.config.ApplicationConfig;
-import com.rentalapps.database.Constants;
-import com.rentalapps.database.DatabaseException;
-import com.rentalapps.database.DbRetentionService;
-import com.rentalapps.database.DbService;
-import com.rentalapps.database.GbCustomerReqObj;
-import com.rentalapps.database.GbCustomerRespObj;
-import com.rentalapps.database.GbLocationReqObj;
-import com.rentalapps.database.GbLocationRespObj;
-import com.rentalapps.database.ServiceException;
-import com.rentalapps.database.Utils;
+import com.rentalapps.util.DatabaseConstants;
+import com.rentalapps.exception.DatabaseException;
+import com.rentalapps.service.DbRetentionService;
+import com.rentalapps.service.DbService;
+import com.rentalapps.vo.GbCustomerReqObj;
+import com.rentalapps.vo.GbCustomerRespObj;
+import com.rentalapps.vo.GbLocationReqObj;
+import com.rentalapps.vo.GbLocationRespObj;
+import com.rentalapps.exception.ServiceException;
+import com.rentalapps.util.RentalDateTimeUtils;
 import com.rentalapps.exception.ApplicationException;
-import com.rentalapps.model.CorrelationBean;
-import com.rentalapps.model.CustomerBean;
-import com.rentalapps.model.CustomerBeanLite;
+import com.rentalapps.vo.CorrelationBean;
+import com.rentalapps.vo.CustomerBean;
+import com.rentalapps.vo.CustomerBeanLite;
 import com.rentalapps.model.CwaMessageBean;
 import com.rentalapps.model.EventType;
-import com.rentalapps.model.LocaltimeBean;
+import com.rentalapps.vo.LocaltimeBean;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
@@ -122,9 +122,9 @@ public class CustomerDataService {
       //e.printStackTrace();
       logger.error("Exception caught:{}. Please check the resource path is correct "
             + "and the entries in the resource are comma separated and try again.", e.getMessage());
-      throw new ServiceException(Constants.ERROR_TYPE_APPLICATION,
-              Constants.DATABASE_ERROR_MESSAGE11,
-              Constants.DATABASE_ERROR_MESSAGE9, Constants.HTTP_CODE_404);
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+              DatabaseConstants.DATABASE_ERROR_MESSAGE11,
+              DatabaseConstants.DATABASE_ERROR_MESSAGE9, DatabaseConstants.HTTP_CODE_404);
     }
   }
 
@@ -137,9 +137,9 @@ public class CustomerDataService {
     List<GbLocationRespObj> resp = dbService.getLocation(locationId.trim().toUpperCase());
     
     if (resp == null) {
-      throw new ServiceException(Constants.ERROR_TYPE_APPLICATION,
-          Constants.DATABASE_ERROR_MESSAGE8,
-          Constants.DATABASE_ERROR_MESSAGE9, Constants.HTTP_CODE_404);
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE8,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE9, DatabaseConstants.HTTP_CODE_404);
     }
     logger.info("End of com.rentalapps.service.getLocation () ...");
     return resp;
@@ -154,9 +154,9 @@ public class CustomerDataService {
     List<GbLocationRespObj> resp = dbService.getLocationList(locationIds);
     
     if (resp == null || resp.size() == 0) {
-      throw new ServiceException(Constants.ERROR_TYPE_APPLICATION,
-          Constants.DATABASE_ERROR_MESSAGE8,
-          Constants.DATABASE_ERROR_MESSAGE9, Constants.HTTP_CODE_404);
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE8,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE9, DatabaseConstants.HTTP_CODE_404);
     }
     logger.info("End of com.rentalapps.service.getLocationList () ...");
     return resp;
@@ -196,8 +196,8 @@ public class CustomerDataService {
       /* Process customer name received from the queue with update or delete action.
        * the customer name to be transformed to GB expected format "LastName F."
        */
-      rental.setArrivalDate(Utils.getTwoDigitDayMonth(rental.getArrivalDate()));
-      if (!StringUtils.trimToEmpty(rental.getAction()).equalsIgnoreCase(Constants.RENTALAPPS_OPERATION_ADD)) {
+      rental.setArrivalDate(RentalDateTimeUtils.getTwoDigitDayMonth(rental.getArrivalDate()));
+      if (!StringUtils.trimToEmpty(rental.getAction()).equalsIgnoreCase(DatabaseConstants.RENTALAPPS_OPERATION_ADD)) {
         rental.setCustomerName(
                     formatNameByRegion(
                             StringUtils.trimToEmpty(rental.getCustomerName()).toUpperCase(),
@@ -232,12 +232,12 @@ public class CustomerDataService {
                       GbCustomerReqObj requestObj = mapper.convertValue(rental, GbCustomerReqObj.class);
 
                       if (StringUtils.trimToEmpty(rental.getAction())
-                              .equalsIgnoreCase(Constants.RENTALAPPS_OPERATION_DELETE)) {
+                              .equalsIgnoreCase(DatabaseConstants.RENTALAPPS_OPERATION_DELETE)) {
                         logger.info("Deleting Customer in DB -->" + rental.getAction());
                         this.eventService.send(EventType.RENTAL_APPS_DELETE_EVENT, requestObj);
                         dbService.removeCustomer(requestObj);
                       } else if (StringUtils.trimToEmpty(rental.getAction())
-                              .equalsIgnoreCase(Constants.RENTALAPPS_OPERATION_ADD)) {
+                              .equalsIgnoreCase(DatabaseConstants.RENTALAPPS_OPERATION_ADD)) {
                         logger.info("Adding Customer in DB -->" + rental.getAction());
                         /* Add action from UI & MQ need to be handled same way by transforming to format "LastName F."
                         * MQ : LastName FirstName =>  LastName F.
@@ -385,9 +385,9 @@ public class CustomerDataService {
     LocaltimeBean bean = new LocaltimeBean();
     bean.setContinent(continent);
     bean.setCity(city);
-    bean.setLocalDateTime(Utils.getCurrentLocalTime(continent, city));
-    bean.setTimeZone(Utils.getTimeZone(continent, city));
-    bean.setReference(Constants.TIMEZONE_REF_lINK);
+    bean.setLocalDateTime(RentalDateTimeUtils.getCurrentLocalTime(continent, city));
+    bean.setTimeZone(RentalDateTimeUtils.getTimeZone(continent, city));
+    bean.setReference(DatabaseConstants.TIMEZONE_REF_lINK);
     return bean;
   }
 }

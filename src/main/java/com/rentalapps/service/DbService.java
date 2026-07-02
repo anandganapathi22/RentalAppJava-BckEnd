@@ -1,6 +1,14 @@
-package com.rentalapps.database;
+package com.rentalapps.service;
 
 import com.rentalapps.config.ApplicationConfig;
+import com.rentalapps.exception.DatabaseException;
+import com.rentalapps.util.DatabaseConstants;
+import com.rentalapps.util.RentalDateTimeUtils;
+import com.rentalapps.vo.GbCustomerBo;
+import com.rentalapps.vo.GbCustomerReqObj;
+import com.rentalapps.vo.GbCustomerRespObj;
+import com.rentalapps.vo.GbLocationReqObj;
+import com.rentalapps.vo.GbLocationRespObj;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -50,7 +58,7 @@ public class DbService {
     customer.setArrivalTime(rs.getString("arrivalTime"));
     customer.setCreatedDateTime(rs.getString("createdDatetime"));
     customer.setUpdatedDateTime(rs.getString("updatedDatetime"));
-    customer.setIdentifier(Utils.isZone(StringUtils.defaultString(customer.getStall())) ? "zone" : "stall");
+    customer.setIdentifier(RentalDateTimeUtils.isZone(StringUtils.defaultString(customer.getStall())) ? "zone" : "stall");
     return customer;
   };
 
@@ -69,7 +77,7 @@ public class DbService {
     String locationCode = normalizeLocation(inputCustomer.getLocationCode());
     String ra = normalizeUpper(inputCustomer.getRa());
     String source = sourceFor(ra, locationCode);
-    String now = Utils.getCurrentUtcTime();
+    String now = RentalDateTimeUtils.getCurrentUtcTime();
 
     String sql = "insert into " + customerTable()
         + " (\"id\", \"customerName\", \"locationCode\", \"stall\", \"oneClub\", \"ra\", "
@@ -90,15 +98,15 @@ public class DbService {
           now,
           now);
 
-      logShadowTable(inputCustomer, Constants.RENTALAPPS_OPERATION_ADD, null);
+      logShadowTable(inputCustomer, DatabaseConstants.RENTALAPPS_OPERATION_ADD, null);
       return getCustomer(trim(inputCustomer.getId()));
     } catch (DuplicateKeyException ex) {
       logger.info("Customer already exists. Redirecting add to update for id={}", inputCustomer.getId());
       return validateUpdateCustomer(inputCustomer);
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE1, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE1, ex, DatabaseConstants.HTTP_CODE_400);
     } catch (Exception ex) {
-      throw systemException(Constants.DATABASE_ERROR_MESSAGE1, ex);
+      throw systemException(DatabaseConstants.DATABASE_ERROR_MESSAGE1, ex);
     }
   }
 
@@ -107,7 +115,7 @@ public class DbService {
     logger.info("Updating customer id={}", inputCustomer.getId());
 
     try {
-      requireExistingCustomer(trim(inputCustomer.getId()), Constants.DATABASE_ERROR_MESSAGE2);
+      requireExistingCustomer(trim(inputCustomer.getId()), DatabaseConstants.DATABASE_ERROR_MESSAGE2);
 
       List<String> assignments = new ArrayList<>();
       List<Object> args = new ArrayList<>();
@@ -128,21 +136,21 @@ public class DbService {
       }
 
       assignments.add("\"updatedDatetime\" = ?");
-      args.add(Utils.getCurrentUtcTime());
+      args.add(RentalDateTimeUtils.getCurrentUtcTime());
       args.add(trim(inputCustomer.getId()));
 
       jdbcTemplate.update(
           "update " + customerTable() + " set " + String.join(", ", assignments) + " where \"id\" = ?",
           args.toArray());
 
-      logShadowTable(inputCustomer, Constants.RENTALAPPS_OPERATION_UPDATE, null);
+      logShadowTable(inputCustomer, DatabaseConstants.RENTALAPPS_OPERATION_UPDATE, null);
       return getCustomer(trim(inputCustomer.getId()));
     } catch (DatabaseException ex) {
       throw ex;
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE2, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE2, ex, DatabaseConstants.HTTP_CODE_400);
     } catch (Exception ex) {
-      throw systemException(Constants.DATABASE_ERROR_MESSAGE2, ex);
+      throw systemException(DatabaseConstants.DATABASE_ERROR_MESSAGE2, ex);
     }
   }
 
@@ -150,10 +158,10 @@ public class DbService {
   public GbCustomerRespObj removeCustomer(GbCustomerReqObj inputCustomer) throws DatabaseException {
     if (inputCustomer == null || inputCustomer.getId() == null || inputCustomer.getRa() == null) {
       throw new DatabaseException(
-          Constants.ERROR_TYPE_DATABASE,
+          DatabaseConstants.ERROR_TYPE_DATABASE,
           "Invalid delete request",
           "Customer id and ra must be provided",
-          Constants.HTTP_CODE_400);
+          DatabaseConstants.HTTP_CODE_400);
     }
 
     try {
@@ -170,14 +178,14 @@ public class DbService {
         return null;
       }
 
-      logShadowTable(toRequest(existing), Constants.RENTALAPPS_OPERATION_DELETE, null);
+      logShadowTable(toRequest(existing), DatabaseConstants.RENTALAPPS_OPERATION_DELETE, null);
       return existing;
     } catch (DatabaseException ex) {
       throw ex;
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE3, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE3, ex, DatabaseConstants.HTTP_CODE_400);
     } catch (Exception ex) {
-      throw systemException(Constants.DATABASE_ERROR_MESSAGE3, ex);
+      throw systemException(DatabaseConstants.DATABASE_ERROR_MESSAGE3, ex);
     }
   }
 
@@ -214,7 +222,7 @@ public class DbService {
     } catch (EmptyResultDataAccessException ex) {
       return null;
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE4, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE4, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -222,7 +230,7 @@ public class DbService {
     try {
       return jdbcTemplate.query(customerSelect() + " order by \"customerName\"", customerMapper);
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE4, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE4, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -233,7 +241,7 @@ public class DbService {
           customerMapper,
           normalizeLocation(locationCode));
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE4, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE4, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -244,7 +252,7 @@ public class DbService {
           locationMapper,
           normalizeLocation(hertzLocationCode));
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE8, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE8, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -268,7 +276,7 @@ public class DbService {
           locationMapper,
           codes.toArray());
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE8, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE8, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -285,7 +293,7 @@ public class DbService {
       refreshLocationCache(code, inputLocation.getTimeZone());
       return getLocation(code).stream().findFirst().orElse(null);
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE5, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE5, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -314,7 +322,7 @@ public class DbService {
       refreshLocationCache(code, inputLocation.getTimeZone());
       return existing;
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE6, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE6, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -331,7 +339,7 @@ public class DbService {
       locationTimeZoneCache.remove(code);
       return existing;
     } catch (DataAccessException ex) {
-      throw databaseException(Constants.DATABASE_ERROR_MESSAGE7, ex, Constants.HTTP_CODE_400);
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE7, ex, DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -355,22 +363,22 @@ public class DbService {
         }
 
         boolean europeLocation = timeZone.startsWith("Europe/");
-        if (Constants.RENTALAPPS_REGION_EU.equalsIgnoreCase(deletionRegion) && !europeLocation) {
+        if (DatabaseConstants.RENTALAPPS_REGION_EU.equalsIgnoreCase(deletionRegion) && !europeLocation) {
           continue;
         }
-        if (Constants.RENTALAPPS_REGION_US.equalsIgnoreCase(deletionRegion) && europeLocation) {
+        if (DatabaseConstants.RENTALAPPS_REGION_US.equalsIgnoreCase(deletionRegion) && europeLocation) {
           continue;
         }
 
         totalRecords++;
-        if (StringUtils.isNotBlank(Utils.isValidDate(customer.getArrivalDate()))
-            || StringUtils.isNotBlank(Utils.isValidTime(customer.getArrivalTime()))) {
+        if (StringUtils.isNotBlank(RentalDateTimeUtils.isValidDate(customer.getArrivalDate()))
+            || StringUtils.isNotBlank(RentalDateTimeUtils.isValidTime(customer.getArrivalTime()))) {
           continue;
         }
 
         LocalDateTime arrivalDateTime =
-            Utils.formatArrivalDateTime(customer.getArrivalDate(), customer.getArrivalTime());
-        LocalDateTime currentDateTime = Utils.getCurrentLocalTime(timeZone);
+            RentalDateTimeUtils.formatArrivalDateTime(customer.getArrivalDate(), customer.getArrivalTime());
+        LocalDateTime currentDateTime = RentalDateTimeUtils.getCurrentLocalTime(timeZone);
         long diffInMinutes = ChronoUnit.MINUTES.between(arrivalDateTime, currentDateTime);
 
         if (diffInMinutes >= measureOld) {
@@ -378,15 +386,15 @@ public class DbService {
           totalDeletedRecords++;
           logShadowTable(
               toRequest(customer),
-              Constants.RENTALAPPS_OPERATION_DELETE,
-              Constants.RENTALAPPS_SOURCE_SCHEDULER + "_" + deletionRegion);
+              DatabaseConstants.RENTALAPPS_OPERATION_DELETE,
+              DatabaseConstants.RENTALAPPS_SOURCE_SCHEDULER + "_" + deletionRegion);
         }
       }
 
       logger.info("{} record(s) deleted out of {} record(s) processed for region {}",
           totalDeletedRecords, totalRecords, deletionRegion);
     } catch (Exception ex) {
-      throw systemException(Constants.DATABASE_ERROR_MESSAGE10, ex);
+      throw systemException(DatabaseConstants.DATABASE_ERROR_MESSAGE10, ex);
     }
   }
 
@@ -409,7 +417,7 @@ public class DbService {
     }
 
     try {
-      String operationTime = Utils.getCurrentUtcTime() + "#" + System.nanoTime();
+      String operationTime = RentalDateTimeUtils.getCurrentUtcTime() + "#" + System.nanoTime();
       String operationDate = operationTime.length() >= 10 ? operationTime.substring(0, 10) : null;
       String source = sourceOverride != null
           ? sourceOverride
@@ -449,10 +457,10 @@ public class DbService {
   private void requireExistingCustomer(String id, String message) throws DatabaseException {
     if (getCustomer(id) == null) {
       throw new DatabaseException(
-          Constants.ERROR_TYPE_DATABASE,
+          DatabaseConstants.ERROR_TYPE_DATABASE,
           message,
           "Customer not found: " + id,
-          Constants.HTTP_CODE_400);
+          DatabaseConstants.HTTP_CODE_400);
     }
   }
 
@@ -491,9 +499,9 @@ public class DbService {
 
   private String sourceFor(String ra, String locationCode) {
     if (isEuropeLocation(locationCode)) {
-      return Constants.RENTALAPPS_SOURCE_TAS_SYSTEM;
+      return DatabaseConstants.RENTALAPPS_SOURCE_TAS_SYSTEM;
     }
-    return Utils.getSourceSystem(trim(ra), appConfig.isEnableQualTesting());
+    return RentalDateTimeUtils.getSourceSystem(trim(ra), appConfig.isEnableQualTesting());
   }
 
   private String customerSelect() {
@@ -535,11 +543,11 @@ public class DbService {
 
   private DatabaseException databaseException(String message, Exception ex, String httpCode) {
     logger.error(message, ex);
-    return new DatabaseException(Constants.ERROR_TYPE_DATABASE, message, ex.getMessage(), httpCode);
+    return new DatabaseException(DatabaseConstants.ERROR_TYPE_DATABASE, message, ex.getMessage(), httpCode);
   }
 
   private DatabaseException systemException(String message, Exception ex) {
     logger.error(message, ex);
-    return new DatabaseException(Constants.ERROR_TYPE_SYSTEM, message, ex.getMessage(), Constants.HTTP_CODE_500);
+    return new DatabaseException(DatabaseConstants.ERROR_TYPE_SYSTEM, message, ex.getMessage(), DatabaseConstants.HTTP_CODE_500);
   }
 }

@@ -1,4 +1,4 @@
-package com.rentalapps.model;
+package com.rentalapps.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

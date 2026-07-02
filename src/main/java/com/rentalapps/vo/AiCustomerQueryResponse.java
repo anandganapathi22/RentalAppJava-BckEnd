@@ -1,4 +1,4 @@
-package com.rentalapps.model;
+package com.rentalapps.vo;
 
 /** Response returned by the AI customer query endpoint. */
 public class AiCustomerQueryResponse {

@@ -1,4 +1,4 @@
-package com.rentalapps.database;
+package com.rentalapps.vo;
 
 /**
  * Response object representing error details returned to API callers.

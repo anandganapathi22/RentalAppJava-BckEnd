@@ -1,8 +1,8 @@
 package com.rentalapps.scheduler;
 
 import com.rentalapps.config.ApplicationConfig;
-import com.rentalapps.database.DbService;
-import com.rentalapps.database.Utils;
+import com.rentalapps.service.DbService;
+import com.rentalapps.util.RentalDateTimeUtils;
 import java.time.Duration;
 import java.time.Instant;
 import net.javacrumbs.shedlock.core.DefaultLockingTaskExecutor;
@@ -44,7 +44,7 @@ public class CustomerDeletionJobScheduler {
   public void scheduleTask() {
 
     if (!appConfig.isEnableDeletionScheduler()) {
-      logger.info("CustomerDeletionJobScheduler DISABLED | time={}", Utils.getCurrentUtcTime());
+      logger.info("CustomerDeletionJobScheduler DISABLED | time={}", RentalDateTimeUtils.getCurrentUtcTime());
       return;
     }
 
@@ -56,7 +56,7 @@ public class CustomerDeletionJobScheduler {
 
     lockingTaskExecutor.executeWithLock((Runnable) () -> {
       logger.info("CustomerDeletionJobScheduler START | region={} | time={}",
-          region, Utils.getCurrentUtcTime());
+          region, RentalDateTimeUtils.getCurrentUtcTime());
       try {
         dbService.removeOldCustomerData();
       } catch (Exception ex) {
@@ -64,7 +64,7 @@ public class CustomerDeletionJobScheduler {
             region, ex.getMessage(), ex);
       }
       logger.info("CustomerDeletionJobScheduler END | region={} | time={}",
-          region, Utils.getCurrentUtcTime());
+          region, RentalDateTimeUtils.getCurrentUtcTime());
     }, lockConfig);
   }
 }

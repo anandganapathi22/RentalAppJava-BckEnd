@@ -1,4 +1,4 @@
-package com.rentalapps.model;
+package com.rentalapps.vo;
 
 /** Request body for natural-language customer data queries. */
 public class AiCustomerQueryRequest {

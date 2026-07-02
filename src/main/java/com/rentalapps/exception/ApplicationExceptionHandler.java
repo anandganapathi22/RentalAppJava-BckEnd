@@ -1,8 +1,8 @@
 package com.rentalapps.exception;
 
-import com.rentalapps.database.DatabaseException;
-import com.rentalapps.database.ErrorRespObj;
-import com.rentalapps.database.ServiceException;
+import com.rentalapps.exception.DatabaseException;
+import com.rentalapps.vo.ErrorRespObj;
+import com.rentalapps.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

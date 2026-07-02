@@ -1,5 +1,6 @@
-package com.rentalapps.database;
+package com.rentalapps.util;
 
+import com.rentalapps.exception.ServiceException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,9 +19,9 @@ import org.slf4j.LoggerFactory;
  * Utility class providing date/time formatting, timezone operations,
  * source system identification, and validation helpers.
  */
-public class Utils {
+public class RentalDateTimeUtils {
 
-  static Logger logger = LoggerFactory.getLogger(Utils.class);
+  static Logger logger = LoggerFactory.getLogger(RentalDateTimeUtils.class);
 
   /** Returns the current UTC time as an ISO-8601 string. */
   public static String getCurrentUtcTime() {
@@ -34,7 +35,7 @@ public class Utils {
       return false;
     }
     String s = inputStall.trim().toUpperCase();
-    return Arrays.stream(Constants.ZONES).anyMatch(s::equals);
+    return Arrays.stream(DatabaseConstants.ZONES).anyMatch(s::equals);
   }
 
 
@@ -50,9 +51,9 @@ public class Utils {
     } catch (Exception ex) {
       logger.error("Exception -----> " + ex.getMessage());
       ex.printStackTrace();
-      throw new ServiceException(Constants.ERROR_TYPE_APPLICATION,
-            Constants.LOCALTIME_ERROR_MESSAGE,
-            ex.getMessage(), Constants.HTTP_CODE_500);
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+            DatabaseConstants.LOCALTIME_ERROR_MESSAGE,
+            ex.getMessage(), DatabaseConstants.HTTP_CODE_500);
     }
     
     return output;
@@ -70,9 +71,9 @@ public class Utils {
     } catch (Exception ex) {
       logger.error("Exception -----> " + ex.getMessage());
       ex.printStackTrace();
-      throw new ServiceException(Constants.ERROR_TYPE_APPLICATION,
-            Constants.LOCALTIME_ERROR_MESSAGE,
-            ex.getMessage(), Constants.HTTP_CODE_500);
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+            DatabaseConstants.LOCALTIME_ERROR_MESSAGE,
+            ex.getMessage(), DatabaseConstants.HTTP_CODE_500);
     }
     return output;
   }
@@ -87,9 +88,9 @@ public class Utils {
     } catch (Exception ex) {
       logger.error("Exception -----> " + ex.getMessage());
       ex.printStackTrace();
-      throw new ServiceException(Constants.ERROR_TYPE_APPLICATION,
-            Constants.LOCALTIME_ERROR_MESSAGE,
-            ex.getMessage(), Constants.HTTP_CODE_500);
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+            DatabaseConstants.LOCALTIME_ERROR_MESSAGE,
+            ex.getMessage(), DatabaseConstants.HTTP_CODE_500);
     }
     return output;
   }
@@ -101,15 +102,15 @@ public class Utils {
     LocalDateTime  output = null;
     try {
       LocalDate arrivalDatePart = null;   
-      arrivalDatePart = LocalDate.parse(Constants.DATE_FORMATTER_TARGET.format(
-        Constants.DATE_FORMATTER_SOURCE.parse(arrivalDate)));
+      arrivalDatePart = LocalDate.parse(DatabaseConstants.DATE_FORMATTER_TARGET.format(
+        DatabaseConstants.DATE_FORMATTER_SOURCE.parse(arrivalDate)));
       output = LocalDateTime.of(arrivalDatePart, LocalTime.parse(arrivalTime, DateTimeFormatter.ofPattern("HH:mm")));
     } catch (Exception ex) {
-      logger.error("Exception from com.rentalapps.database.Utils -----> " + ex.getMessage());
+      logger.error("Exception from com.rentalapps.util.RentalDateTimeUtils -----> " + ex.getMessage());
       ex.printStackTrace();
-      throw new ServiceException(Constants.ERROR_TYPE_APPLICATION,
-            Constants.LOCALTIME_ERROR_MESSAGE,
-            ex.getMessage(), Constants.HTTP_CODE_500);
+      throw new ServiceException(DatabaseConstants.ERROR_TYPE_APPLICATION,
+            DatabaseConstants.LOCALTIME_ERROR_MESSAGE,
+            ex.getMessage(), DatabaseConstants.HTTP_CODE_500);
     }
     return output;
   }
@@ -119,7 +120,7 @@ public class Utils {
 
     String output = "";
     try {
-      LocalDate.parse(inputDate, Constants.DATE_FORMATTER_SOURCE);
+      LocalDate.parse(inputDate, DatabaseConstants.DATE_FORMATTER_SOURCE);
     } catch (DateTimeParseException ex) {
       
       output = ex.getMessage();
@@ -132,7 +133,7 @@ public class Utils {
     
     String output = "";
     try {
-      LocalTime.parse(inputTime, Constants.TIME_FORMATTER_SOURCE);
+      LocalTime.parse(inputTime, DatabaseConstants.TIME_FORMATTER_SOURCE);
     } catch (DateTimeParseException ex) {
       
       output = ex.getMessage();
@@ -159,20 +160,20 @@ public class Utils {
     }
 
     // Special exact match: RA12345
-    if (Constants.RENTALAPPS_SOURCE_UI_DEFAULT_VAL.equals(ra)) {
-      return Constants.RENTALAPPS_SOURCE_UI_SYSTEM;  // GB-UI
+    if (DatabaseConstants.RENTALAPPS_SOURCE_UI_DEFAULT_VAL.equals(ra)) {
+      return DatabaseConstants.RENTALAPPS_SOURCE_UI_SYSTEM;  // GB-UI
     }
 
     // Numeric RA
     if (ra.matches("\\d+")) {
-      return Constants.RENTALAPPS_SOURCE_DASH_SYSTEM;
+      return DatabaseConstants.RENTALAPPS_SOURCE_DASH_SYSTEM;
     } else if (qualTesting && ra.charAt(0) == 'T') {
-      return Constants.RENTALAPPS_SOURCE_DASH_SYSTEM;
+      return DatabaseConstants.RENTALAPPS_SOURCE_DASH_SYSTEM;
     }
 
     // Alphanumeric / contains letters
 
-    return Constants.RENTALAPPS_SOURCE_CWA_SYSTEM;
+    return DatabaseConstants.RENTALAPPS_SOURCE_CWA_SYSTEM;
   }
 
   /** Returns true if the stall value is a purely numeric string. */

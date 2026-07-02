@@ -1,16 +1,17 @@
-package com.rentalapps.database;
+package com.rentalapps.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Request object for customer CRUD operations, carrying input data from API or MQ consumers.
+ * Response object representing a customer record returned to API callers.
+ * Includes an identifier field to distinguish stall vs zone assignments.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GbCustomerReqObj {
+public class GbCustomerRespObj {
 
   private String id;
   private String customerName;
@@ -20,4 +21,7 @@ public class GbCustomerReqObj {
   private String stall;
   private String arrivalDate;
   private String arrivalTime;
+  private String createdDateTime;
+  private String updatedDateTime;
+  private String identifier;
 }

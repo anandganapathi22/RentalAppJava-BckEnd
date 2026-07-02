@@ -1,4 +1,4 @@
-package com.rentalapps.database;
+package com.rentalapps.util;
 
 
 
@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
  * Constants for database column names, error messages, HTTP codes,
  * date formatters, and Rental Apps business values used across the application.
  */
-public class Constants {
+public class DatabaseConstants {
   public static final String ERROR_TYPE_APPLICATION = "Application Error";
   public static final String ERROR_TYPE_DATABASE = "Database Error";
   public static final String ERROR_TYPE_SYSTEM = "System Error";

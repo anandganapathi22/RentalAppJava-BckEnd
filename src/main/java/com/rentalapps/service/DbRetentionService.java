@@ -1,6 +1,12 @@
-package com.rentalapps.database;
+package com.rentalapps.service;
 
 import com.rentalapps.config.ApplicationConfig;
+import com.rentalapps.exception.DatabaseException;
+import com.rentalapps.util.DatabaseConstants;
+import com.rentalapps.vo.GbCustomerBo;
+import com.rentalapps.vo.GbCustomerReqObj;
+import com.rentalapps.vo.GbCustomerRespObj;
+import com.rentalapps.vo.GbLocationRespObj;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -60,8 +66,8 @@ public class DbRetentionService {
           deletedCustomers.add(customer);
           dbService.logShadowTable(
               toRequest(customer),
-              Constants.RENTALAPPS_OPERATION_DELETE,
-              Constants.RENTALAPPS_SOURCE_RETENTION_API);
+              DatabaseConstants.RENTALAPPS_OPERATION_DELETE,
+              DatabaseConstants.RENTALAPPS_SOURCE_RETENTION_API);
           jdbcTemplate.update(
               "delete from " + quoted(appConfig.getDatabaseTable()) + " where \"id\" = ?",
               customer.getId());
@@ -75,10 +81,10 @@ public class DbRetentionService {
     } catch (Exception ex) {
       logger.error("Exception deleting old data", ex);
       throw new DatabaseException(
-          Constants.ERROR_TYPE_SYSTEM,
-          Constants.DATABASE_ERROR_MESSAGE4,
+          DatabaseConstants.ERROR_TYPE_SYSTEM,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE4,
           ex.getMessage(),
-          Constants.HTTP_CODE_500);
+          DatabaseConstants.HTTP_CODE_500);
     }
   }
 
@@ -94,9 +100,9 @@ public class DbRetentionService {
   private LocalDateTime getLocalPastTime(String locationCode, String timeInterval) throws DatabaseException {
     String timeZone = getTimeZone(locationCode);
     if (StringUtils.isEmpty(timeZone)) {
-      throw new DatabaseException(Constants.ERROR_TYPE_SYSTEM,
-          Constants.DATABASE_ERROR_MESSAGE11,
-          "Unable to get timezone from database", Constants.HTTP_CODE_500);
+      throw new DatabaseException(DatabaseConstants.ERROR_TYPE_SYSTEM,
+          DatabaseConstants.DATABASE_ERROR_MESSAGE11,
+          "Unable to get timezone from database", DatabaseConstants.HTTP_CODE_500);
     }
     return LocalDateTime.now(ZoneId.of(timeZone)).minusMinutes(Integer.parseInt(timeInterval));
   }

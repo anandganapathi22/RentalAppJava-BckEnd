@@ -1,4 +1,4 @@
-package com.rentalapps.database;
+package com.rentalapps.vo;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

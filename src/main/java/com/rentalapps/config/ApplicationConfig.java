@@ -1,6 +1,6 @@
 package com.rentalapps.config;
 
-import com.rentalapps.database.Constants;
+import com.rentalapps.util.DatabaseConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -59,10 +59,10 @@ public class ApplicationConfig {
 
     region = region.trim().toUpperCase();
 
-    if (!Constants.RENTALAPPS_REGION_US.equals(region) && !Constants.RENTALAPPS_REGION_EU.equals(region)) {
+    if (!DatabaseConstants.RENTALAPPS_REGION_US.equals(region) && !DatabaseConstants.RENTALAPPS_REGION_EU.equals(region)) {
       throw new IllegalStateException(
               "Invalid value for gb.config.deletionRegion: " + region
-                      + ". Expected " + Constants.RENTALAPPS_REGION_US + " or " + Constants.RENTALAPPS_REGION_EU);
+                      + ". Expected " + DatabaseConstants.RENTALAPPS_REGION_US + " or " + DatabaseConstants.RENTALAPPS_REGION_EU);
     }
 
     return region;

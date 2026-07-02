@@ -1,4 +1,4 @@
-package com.rentalapps.restcontroller;
+package com.rentalapps.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
