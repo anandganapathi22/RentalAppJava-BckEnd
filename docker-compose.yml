@@ -4,7 +4,7 @@ services:
     image: rental-applications:local
     container_name: rental-applications
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       GOLDSIGN_MQ_ENABLED: "false"
       SPRING_JMS_LISTENER_AUTO_STARTUP: "false"

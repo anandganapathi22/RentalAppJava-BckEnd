@@ -150,6 +150,22 @@ public class RentalAppsController {
     return new ResponseEntity<SuccessRespObj>(resp, HttpStatus.OK);
   }  
 
+  /** GET /admin/locations - Retrieves all configured locations. */
+  @RequestMapping(value = "/admin/locations", method = RequestMethod.GET, produces = "application/json")
+  public ResponseEntity<SuccessRespObj> getLocations()
+      throws DatabaseException, ServiceException {
+
+    logger.info("Start of com.rentalapps.controller.getLocations () ...");
+
+    List<GbLocationRespObj> data = customerDataService.getLocations();
+    SuccessRespObj resp = new SuccessRespObj();
+    resp.setData(data);
+    resp.setMessage(DatabaseConstants.GET_LOCATION_SUCCESS_MESSAGE);
+
+    logger.info("End of com.rentalapps.controller.getLocations () ...");
+    return new ResponseEntity<SuccessRespObj>(resp, HttpStatus.OK);
+  }
+
   /** PUT /admin/locations - Updates an existing location record. */
   @RequestMapping(value = "/admin/locations", method = RequestMethod.PUT, produces = "application/json")
   public ResponseEntity<SuccessRespObj> updateLocation(@RequestBody GbLocationReqObj inputLocation) 

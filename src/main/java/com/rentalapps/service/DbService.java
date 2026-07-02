@@ -256,6 +256,16 @@ public class DbService {
     }
   }
 
+  public List<GbLocationRespObj> getLocations() throws DatabaseException {
+    try {
+      return jdbcTemplate.query(
+          locationSelect() + " order by \"hertzLocationCode\"",
+          locationMapper);
+    } catch (DataAccessException ex) {
+      throw databaseException(DatabaseConstants.DATABASE_ERROR_MESSAGE8, ex, DatabaseConstants.HTTP_CODE_400);
+    }
+  }
+
   public List<GbLocationRespObj> getLocationList(List<String> hertzLocationCodes) throws DatabaseException {
     if (hertzLocationCodes == null || hertzLocationCodes.isEmpty()) {
       return Collections.emptyList();
