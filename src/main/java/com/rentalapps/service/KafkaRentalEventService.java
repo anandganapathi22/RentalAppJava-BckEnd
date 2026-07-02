@@ -1,0 +1,102 @@
+package com.rentalapps.service;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.rentalapps.exception.ApplicationException;
+import com.rentalapps.model.CwaMessageBean;
+import com.rentalapps.model.Rental;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+/**
+ * Converts Kafka rental events into the existing CWA message shape and persists them.
+ */
+@Service
+public class KafkaRentalEventService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaRentalEventService.class);
+
+  private final ObjectMapper objectMapper = new ObjectMapper()
+      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  private final XmlMapper xmlMapper = new XmlMapper();
+  private final CustomerDataService customerDataService;
+
+  public KafkaRentalEventService(CustomerDataService customerDataService) {
+    this.customerDataService = customerDataService;
+  }
+
+  public void process(String topic, String key, Headers headers, String payload)
+      throws IOException, ApplicationException {
+    if (StringUtils.isBlank(payload)) {
+      LOGGER.warn("Skipping blank Kafka payload from topic {}", topic);
+      return;
+    }
+
+    CwaMessageBean cwaMessageBean = toCwaMessageBean(payload);
+    String locationCode = resolveLocationCode(cwaMessageBean, key, headers);
+    if (StringUtils.isBlank(locationCode)) {
+      throw new IllegalArgumentException("Kafka rental event must include locationCode, key, or locationCode header");
+    }
+
+    LOGGER.info("Persisting Kafka rental event from topic {} for location {}", topic, locationCode);
+    customerDataService.persistQueueData(locationCode, cwaMessageBean);
+  }
+
+  private CwaMessageBean toCwaMessageBean(String payload) throws IOException {
+    String trimmedPayload = payload.trim();
+    if (trimmedPayload.startsWith("<")) {
+      return xmlMapper.readValue(trimmedPayload, CwaMessageBean.class);
+    }
+
+    JsonNode rootNode = objectMapper.readTree(trimmedPayload);
+    CwaMessageBean cwaMessageBean = new CwaMessageBean();
+    JsonNode rentalNode = rootNode.has("rental") ? rootNode.get("rental") : rootNode;
+
+    if (rentalNode.isArray()) {
+      for (JsonNode item : rentalNode) {
+        cwaMessageBean.setRental(objectMapper.treeToValue(item, Rental.class));
+      }
+    } else {
+      cwaMessageBean.setRental(objectMapper.treeToValue(rentalNode, Rental.class));
+    }
+
+    return cwaMessageBean;
+  }
+
+  private String resolveLocationCode(CwaMessageBean cwaMessageBean, String key, Headers headers) {
+    return StringUtils.upperCase(StringUtils.trimToNull(
+        firstRentalLocation(cwaMessageBean, key, headerValue(headers, "locationCode"))));
+  }
+
+  private String firstRentalLocation(CwaMessageBean cwaMessageBean, String key, String headerLocationCode) {
+    if (cwaMessageBean != null && !cwaMessageBean.rental().isEmpty()) {
+      String rentalLocationCode = cwaMessageBean.rental().get(0).getLocationCode();
+      if (StringUtils.isNotBlank(rentalLocationCode)) {
+        return rentalLocationCode;
+      }
+    }
+    if (StringUtils.isNotBlank(headerLocationCode)) {
+      return headerLocationCode;
+    }
+    return key;
+  }
+
+  private String headerValue(Headers headers, String name) {
+    if (headers == null) {
+      return null;
+    }
+    Header header = headers.lastHeader(name);
+    if (header == null || header.value() == null) {
+      return null;
+    }
+    return new String(header.value(), StandardCharsets.UTF_8);
+  }
+}
