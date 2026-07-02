@@ -18,11 +18,18 @@ pipeline {
                 sh './mvnw -B test'
             }
         }
+
+        stage('Build') {
+            steps {
+                sh './mvnw -B package -DskipTests'
+            }
+        }
     }
 
     post {
         always {
             junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+            archiveArtifacts allowEmptyArchive: false, artifacts: 'target/*.war,target/*.jar'
         }
     }
 }
