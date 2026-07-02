@@ -2,6 +2,7 @@ HELP.md
 .env
 target/
 data/*.db
+jenkins-local/home/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
