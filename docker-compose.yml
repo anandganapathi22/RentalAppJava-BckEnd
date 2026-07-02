@@ -1,0 +1,17 @@
+services:
+  rental-applications:
+    build: .
+    image: rental-applications:local
+    container_name: rental-applications
+    ports:
+      - "8080:8080"
+    environment:
+      GOLDSIGN_MQ_ENABLED: "false"
+      SPRING_JMS_LISTENER_AUTO_STARTUP: "false"
+      SPRING_AI_MODEL_CHAT: "none"
+      SPRING_DATASOURCE_URL: "jdbc:h2:file:/app/data/rentalapps-db;MODE=PostgreSQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+      SPRING_DATASOURCE_USERNAME: "sa"
+      SPRING_DATASOURCE_PASSWORD: ""
+      SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
+    volumes:
+      - ./data:/app/data

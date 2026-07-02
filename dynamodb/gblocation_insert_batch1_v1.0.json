@@ -1,0 +1,379 @@
+{
+	"GBLocationData-dev": [
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "NMABQ11"
+					},
+					"displayName": {
+						"S": "Albuquerque"
+					},
+					"timeZone": {
+						"S": "America/Denver"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "GAATL11"
+					},
+					"displayName": {
+						"S": "Atlanta"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "TXAUS15"
+					},
+					"displayName": {
+						"S": "Austin"
+					},
+					"timeZone": {
+						"S": "America/Chicago"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "MDBAL11"
+					},
+					"displayName": {
+						"S": "Baltimore"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "MALOG11"
+					},
+					"displayName": {
+						"S": "Boston"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "CABUR11"
+					},
+					"displayName": {
+						"S": "Burbank"
+					},
+					"timeZone": {
+						"S": "America/Los_Angeles"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "NCCHA12"
+					},
+					"displayName": {
+						"S": "Charlotte"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "ILMDW11"
+					},
+					"displayName": {
+						"S": "Chicago Midway"
+					},
+					"timeZone": {
+						"S": "America/Chicago"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "ILORD10"
+					},
+					"displayName": {
+						"S": "Chicago Ohare"
+					},
+					"timeZone": {
+						"S": "America/Chicago"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "OHCIN11"
+					},
+					"displayName": {
+						"S": "Cincinnati"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "OHCLE12"
+					},
+					"displayName": {
+						"S": "Cleveland"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "TXDFW20"
+					},
+					"displayName": {
+						"S": "Dallas DFW"
+					},
+					"timeZone": {
+						"S": "America/Chicago"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "TXLOV11"
+					},
+					"displayName": {
+						"S": "Dallas Love"
+					},
+					"timeZone": {
+						"S": "America/Chicago"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "CODEN11"
+					},
+					"displayName": {
+						"S": "Denver"
+					},
+					"timeZone": {
+						"S": "America/Denver"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "MIDAP13"
+					},
+					"displayName": {
+						"S": "Detroit"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "DCIAD26"
+					},
+					"displayName": {
+						"S": "Dulles Washington"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "TXELP11"
+					},
+					"displayName": {
+						"S": "El Paso"
+					},
+					"timeZone": {
+						"S": "America/Denver"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "FLFLA11"
+					},
+					"displayName": {
+						"S": "Fort Lauderdale"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "FLFMY11"
+					},
+					"displayName": {
+						"S": "Fort Myers"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "CTHAR11"
+					},
+					"displayName": {
+						"S": "Hartford"
+					},
+					"timeZone": {
+						"S": "America/New_York"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "HIHON11"
+					},
+					"displayName": {
+						"S": "HI - Honolulu"
+					},
+					"timeZone": {
+						"S": "Pacific/Honolulu"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "HIKON11"
+					},
+					"displayName": {
+						"S": "HI- Kona"
+					},
+					"timeZone": {
+						"S": "Pacific/Honolulu"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "HIKAU10"
+					},
+					"displayName": {
+						"S": "HI - Lihue"
+					},
+					"timeZone": {
+						"S": "Pacific/Honolulu"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "HIKAH10"
+					},
+					"displayName": {
+						"S": "HI - Maui"
+					},
+					"timeZone": {
+						"S": "Pacific/Honolulu"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "TXHOB24"
+					},
+					"displayName": {
+						"S": "Houston Hobby"
+					},
+					"timeZone": {
+						"S": "America/Chicago"
+					}
+				}
+			}
+		}
+	]
+}

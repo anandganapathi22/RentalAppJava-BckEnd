@@ -1,0 +1,40 @@
+{
+	"GBLocationData-dev": [
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "OKOKC11"
+					},
+					"displayName": {
+						"S": "Oklahoma City"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "UKLHR50"
+					},
+					"displayName": {
+						"S": "Heathrow"
+					}
+				}
+			}
+		},
+		{
+			"PutRequest": {
+				"Item": {
+					"hertzLocationCode": {
+						"S": "MNMIN10"
+					},
+					"displayName": {
+						"S": "Minneapolis "
+					}
+				}
+			}
+		}
+	]
+}

@@ -1,0 +1,7 @@
+target/
+!target/rental-applications-*.war
+.git/
+.idea/
+.ai/
+.mvn/
+data/*.trace.db

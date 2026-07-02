@@ -1,0 +1,133 @@
+logging:
+  level:
+    root: INFO
+    org.apache: INFO
+spring:
+  ai:
+    model:
+      chat: ${SPRING_AI_MODEL_CHAT:none}
+      embedding: none
+      image: none
+      moderation: none
+      audio:
+        speech: none
+        transcription: none
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o-mini}
+  datasource:
+    url: jdbc:h2:file:G:/rental-applications/data/rentalapps-db;MODE=PostgreSQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  sql:
+    init:
+      mode: always
+server:
+  error:
+    include-exception: true
+    include-stacktrace: never
+    include-message: always
+    include-binding-errors: always
+  servlet:
+    context-path:
+management:
+  info:
+    git:
+      mode: full
+  endpoints:
+    web:
+      exposure:
+        include: health, data-caches, env, info
+  endpoint:
+    keysToSanitize: password, secret
+    regexPatterns: ['*', '$', '^', '+']
+    env:
+      show-values: always
+com.hertz.digital.msf:
+  security:
+    jwt:
+      enabled: false
+      permit:
+        - /gb/*
+        - /actuator/health
+        - /actuator/env
+        - /actuator/info
+        - /v3/api-docs*
+
+events:
+  publish:
+    enabled: false
+db:
+  tables:
+    customer: rentalapps-customer-data
+    audit: rentalapps-audit-data
+    location: rentalapps-locations-data
+    shedlock: rentalapps-shedlock-data
+
+goldSign:
+  MQ:
+    enabled: ${GOLDSIGN_MQ_ENABLED:false}
+    host:
+      primary: primary.hertz.net
+      secondary: secondary.hertz.net
+    port:
+      primary: 2022
+      secondary: 2023
+    queue:
+      manager:
+        primary: primaryhost
+        secondary: secondaryhost
+    channel:
+      primary: DTHUB01CCGSV
+      secondary: DTHUB02CCGSV
+    request:
+      queue:
+        primary: DTHUB01IQGSV
+        secondary: DTHUB02IQGSV
+    reply:
+      queue:
+        primary: DTHUB01OQGSV
+        secondary: DTHUB02OQGSV
+    charset:
+      primary: 819
+      secondary: 819
+    charlength:
+      primary: 1
+      secondary: 1
+    correlation:
+      id:
+        primary:
+          locationA: 4d4e4d494e31302020202020202020202020202020202020
+        secondary:
+          locationA: 4d4e4d494e31302020202020202020202020202020202020
+    consumer:
+      locationsFilter: >
+        JMSCorrelationID='ID:4d4e4d494e31302020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:4f4b4f4b4331312020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:554b4c485235302020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:464c464d5931312020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:43414c415831352020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:43414f414b31322020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:434f44454e31312020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:4e594c474131302020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:464c57455331312020202020202020202020202020202020' OR
+        JMSCorrelationID='ID:4341534a4f31312020202020202020202020202020202020'
+
+gb:
+  config:
+    firstNameLengthCut: 2
+    oldnessOfCustomerDataInMinutes: 1380
+    enableDeletionScheduler: "false"
+    deletionRegion: "US"
+    enableQualTesting: "false"
+    shadowTableEnable: "true"
+    shadowTableExpiryMonths: 3
+    deleteSource: DASH
+    deleteSource306090Job: 306090Job

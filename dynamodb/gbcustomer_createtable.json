@@ -1,0 +1,42 @@
+{
+	"TableName": "GBCustomerData-dev",
+	"KeySchema": [
+		{
+			"KeyType": "HASH",
+			"AttributeName": "id"
+		}
+	],
+	"GlobalSecondaryIndexes": [
+		{
+			"IndexName": "LocationCode-index",
+			"Projection": {
+				"ProjectionType": "ALL"
+			},
+			"ProvisionedThroughput": {
+				"WriteCapacityUnits": 5,
+				"ReadCapacityUnits": 5
+			},
+			"KeySchema": [
+				{
+					"KeyType": "HASH",
+					"AttributeName": "locationCode"
+				}
+			]
+		}
+	],
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "id",
+			"AttributeType": "S"
+		},
+		{
+			"AttributeName": "locationCode",
+			"AttributeType": "S"
+		}
+	],
+	"BillingMode": "PROVISIONED",
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits": 5
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"TableName": "GBLocationData-dev",
+	"KeySchema": [
+		{
+			"KeyType": "HASH",
+			"AttributeName": "hertzLocationCode"
+		}
+	],
+	"AttributeDefinitions": [
+		{
+			"AttributeName": "hertzLocationCode",
+			"AttributeType": "S"
+		}
+	],
+	"BillingMode": "PROVISIONED",
+	"ProvisionedThroughput": {
+		"ReadCapacityUnits": 5,
+		"WriteCapacityUnits": 5
+	}
+}
