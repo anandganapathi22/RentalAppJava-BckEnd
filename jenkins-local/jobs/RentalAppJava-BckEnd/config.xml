@@ -10,6 +10,7 @@
       <userRemoteConfigs>
         <hudson.plugins.git.UserRemoteConfig>
           <url>https://github.com/anandganapathi22/RentalAppJava-BckEnd.git</url>
+          <credentialsId>github-rentalapp</credentialsId>
         </hudson.plugins.git.UserRemoteConfig>
       </userRemoteConfigs>
       <branches>

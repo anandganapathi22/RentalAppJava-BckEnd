@@ -10,6 +10,8 @@ services:
     environment:
       JENKINS_ADMIN_ID: admin
       JENKINS_ADMIN_PASSWORD: admin123
+      GITHUB_USERNAME: ${GITHUB_USERNAME:-anandganapathi22}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
     volumes:
       - jenkins_home:/var/jenkins_home
 
