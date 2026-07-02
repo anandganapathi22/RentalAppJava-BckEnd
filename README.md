@@ -1,6 +1,6 @@
 # Rental Apps API
 
-Spring Boot microservice that manages Gold member stall assignments at rental locations. Consumes customer rental events from IBM MQ (CWA), persists data to Amazon DynamoDB, publishes events to Amazon Kinesis, and exposes REST APIs for the Rental Apps UI and admin operations.
+Spring Boot microservice that manages Gold member stall assignments at rental locations. Consumes customer rental events from IBM MQ (CWA) and optionally Kafka, persists data to Amazon DynamoDB, publishes events to Amazon Kinesis, and exposes REST APIs for the Rental Apps UI and admin operations.
 
 ## Technology Stack
 
@@ -49,7 +49,7 @@ src/main/java/com/rentalapps/
   RentalAppsListenerApplication.java   # Spring Boot entry point
   config/                              # application, security, database, and scheduler config
   configmq/                            # IBM MQ connection factory setup
-  consumer/                            # inbound MQ consumers
+  consumer/                            # inbound MQ and Kafka consumers
   controller/                          # REST and UI controllers
   exception/                           # application exceptions and global handlers
   model/                               # domain/event models
@@ -60,6 +60,20 @@ src/main/java/com/rentalapps/
 ```
 
 ## API Endpoints
+
+## Architecture Console
+
+The app serves a local architecture console at `/` and `/admin`. It models the Kafka-based target architecture with
+local topic counters, event publishing, display projections, and audit history.
+
+Key endpoints:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/architecture/overview` | Topic counters, customer-state counts, and recent local events |
+| POST | `/api/architecture/events` | Publish a US/EU rental event through the local architecture flow |
+| GET | `/api/architecture/display/{region}` | Display/API projection for `US` or `EU`, optionally filtered by `locationId` |
+| GET | `/api/architecture/audit?limit={n}` | Recent audit records from the audit table |
 
 ### Customer
 
@@ -163,6 +177,40 @@ goldSign:
 ```
 
 The `locationsFilter` is a JMS message selector containing hex-encoded location codes. Each location's correlation ID is its code encoded as hex and right-padded with `20` (space) bytes. Use the `/admin/locations/{id}/correlation-from-location` endpoint to generate a correlation ID for a new location.
+
+### Kafka
+
+Kafka consumption is optional and can run alongside IBM MQ. Enable it with environment variables:
+
+```powershell
+$env:RENTAL_KAFKA_ENABLED="true"
+$env:KAFKA_BOOTSTRAP_SERVERS="localhost:9092"
+$env:KAFKA_GROUP_ID="rental-applications"
+$env:KAFKA_TOPIC_RENTAL_US="rental-events-us"
+$env:KAFKA_TOPIC_RENTAL_EU="rental-events-eu"
+$env:KAFKA_TOPIC_ADHOC="adhoc-goldboard-events"
+```
+
+Accepted payloads:
+
+- JSON rental event with fields such as `action`, `locationCode`, `customerName`, `oneClub`, `ra`, `stall`, `arrivalDate`, and `arrivalTime`.
+- JSON wrapper with `rental` as an object or array.
+- CWA XML payload, with the location supplied by Kafka key or `locationCode` header when the XML does not include it.
+
+Example JSON message:
+
+```json
+{
+  "action": "add",
+  "locationCode": "OKC11",
+  "customerName": "Smith John",
+  "oneClub": "OC123",
+  "ra": "RA100",
+  "stall": "A12",
+  "arrivalDate": "07/02",
+  "arrivalTime": "10:30"
+}
+```
 
 ## Local Setup
 

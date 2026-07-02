@@ -29,6 +29,15 @@ spring:
   sql:
     init:
       mode: always
+rental:
+  kafka:
+    enabled: ${RENTAL_KAFKA_ENABLED:false}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    group-id: ${KAFKA_GROUP_ID:rental-applications}
+    topics:
+      rental-us: ${KAFKA_TOPIC_RENTAL_US:rental-events-us}
+      rental-eu: ${KAFKA_TOPIC_RENTAL_EU:rental-events-eu}
+      adhoc: ${KAFKA_TOPIC_ADHOC:adhoc-goldboard-events}
 server:
   error:
     include-exception: true
