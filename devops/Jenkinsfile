@@ -1,9 +1,0 @@
-htzdJava17Dev([
-    BU: "counterapps",
-    appName: "counterapps-goldboard", //
-    domain: "rental", // used to group services by functinality e.g. rates, payments etc.
-    sonarCoverageExclusions: ",**/*Config.*,**/*Configuration.*,**/model/**/*,**/dto/**/*,**/*Application.*,**/*Exception.*,**/*Properties.*,**/*Error.*",
-    sonarLibraries: "**/maven-dependencies/lombok*",
-    mainTrack: "main",
-])
-
