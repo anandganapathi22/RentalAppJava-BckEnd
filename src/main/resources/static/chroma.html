@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChromaDB Admin</title>
+    <link rel="stylesheet" href="/chroma.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>ChromaDB Admin</h1>
+          <p id="status">Connecting...</p>
+        </div>
+        <button id="refreshButton" type="button">Refresh</button>
+      </header>
+
+      <section class="controls">
+        <label>
+          Tenant
+          <input id="tenantInput" value="default_tenant" />
+        </label>
+        <label>
+          Database
+          <input id="databaseInput" value="default_database" />
+        </label>
+        <form id="createCollectionForm">
+          <label>
+            New collection
+            <input id="collectionNameInput" placeholder="collection_name" />
+          </label>
+          <button type="submit">Create</button>
+        </form>
+      </section>
+
+      <section class="layout">
+        <aside class="panel">
+          <div class="panelHeader">
+            <h2>Collections</h2>
+            <span id="collectionCount">0</span>
+          </div>
+          <div id="collectionsList" class="list"></div>
+        </aside>
+
+        <section class="panel details">
+          <div class="panelHeader">
+            <h2 id="selectedTitle">Select a collection</h2>
+            <span id="recordCount"></span>
+          </div>
+          <div class="actions">
+            <button id="loadRecordsButton" type="button" disabled>Load Records</button>
+          </div>
+          <pre id="recordsOutput">No collection selected.</pre>
+        </section>
+      </section>
+    </main>
+    <script src="/chroma.js"></script>
+  </body>
+</html>

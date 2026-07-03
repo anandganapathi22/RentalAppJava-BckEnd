@@ -191,6 +191,53 @@ $env:KAFKA_TOPIC_RENTAL_EU="rental-events-eu"
 $env:KAFKA_TOPIC_ADHOC="adhoc-goldboard-events"
 ```
 
+For local end-to-end testing, the root Docker Compose stack starts Kafka, creates the topics, enables the backend Kafka
+consumer, and starts the producer UI:
+
+```powershell
+.\mvnw.cmd -DskipTests package
+docker compose up --build
+```
+
+Open the producer UI at `http://localhost:8090` and the backend app at `http://localhost:8081`. Kafka is exposed to
+the host at `localhost:9092`; containers use `kafka:29092`.
+
+### Local Spring AI, Ollama, and ChromaDB
+
+The root Docker Compose stack also starts a local AI stack for Docker Desktop:
+
+```text
+Spring Boot app -> Spring AI -> Ollama Llama3
+                            -> ChromaDB
+```
+
+Compose pulls the `llama3` model into the named `ollama-data` volume before the backend starts. The backend container
+uses these settings:
+
+```yaml
+SPRING_AI_MODEL_CHAT: ollama
+SPRING_AI_OLLAMA_BASE_URL: http://ollama:11434
+OLLAMA_CHAT_MODEL: llama3
+CHROMA_URL: http://chromadb:8000
+```
+
+Run everything:
+
+```powershell
+$env:JAVA_HOME="C:\Program Files\Eclipse Adoptium\jdk-25.0.1.8-hotspot"
+.\mvnw.cmd -DskipTests package
+docker compose up --build
+```
+
+Ports:
+
+| Service | URL |
+|---|---|
+| Backend app | `http://localhost:8081` |
+| Ollama | `http://localhost:11434` |
+| ChromaDB | `http://localhost:8000` |
+| Kafka UI | `http://localhost:8082` |
+
 Accepted payloads:
 
 - JSON rental event with fields such as `action`, `locationCode`, `customerName`, `oneClub`, `ra`, `stall`, `arrivalDate`, and `arrivalTime`.
@@ -207,7 +254,7 @@ Example JSON message:
   "oneClub": "OC123",
   "ra": "RA100",
   "stall": "A12",
-  "arrivalDate": "07/02",
+  "arrivalDate": "07/02/2026",
   "arrivalTime": "10:30"
 }
 ```

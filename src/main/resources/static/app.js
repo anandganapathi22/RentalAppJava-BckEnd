@@ -31,6 +31,22 @@
     return response.json();
   }
 
+  async function postJson(url, payload) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(text || `Request failed with status ${response.status}`);
+    }
+    return text ? JSON.parse(text) : {};
+  }
+
   function App() {
     const [locations, setLocations] = useState([]);
     const [selectedLocation, setSelectedLocation] = useState("LOC001");
@@ -38,6 +54,16 @@
     const [loadingLocations, setLoadingLocations] = useState(true);
     const [loadingCustomers, setLoadingCustomers] = useState(false);
     const [error, setError] = useState("");
+    const [chatMessages, setChatMessages] = useState([
+      {
+        role: "assistant",
+        content: "Ask a question about the selected location's rental records.",
+        recordsUsed: 0
+      }
+    ]);
+    const [chatQuestion, setChatQuestion] = useState("");
+    const [chatLoading, setChatLoading] = useState(false);
+    const [chatError, setChatError] = useState("");
 
     useEffect(() => {
       let cancelled = false;
@@ -104,6 +130,18 @@
       };
     }, [selectedLocation]);
 
+    useEffect(() => {
+      setChatMessages([
+        {
+          role: "assistant",
+          content: "Ask a question about the selected location's rental records.",
+          recordsUsed: 0
+        }
+      ]);
+      setChatQuestion("");
+      setChatError("");
+    }, [selectedLocation]);
+
     const selectedLocationDetails = useMemo(
       () => locations.find((location) => location.hertzLocationCode === selectedLocation),
       [locations, selectedLocation]
@@ -113,6 +151,38 @@
       () => [...customers].sort((left, right) => (left.customerName || "").localeCompare(right.customerName || "")),
       [customers]
     );
+
+    async function submitChatQuestion(event) {
+      event.preventDefault();
+      const question = chatQuestion.trim();
+      if (!question || chatLoading) {
+        return;
+      }
+
+      setChatQuestion("");
+      setChatError("");
+      setChatLoading(true);
+      setChatMessages((messages) => [...messages, { role: "user", content: question }]);
+
+      try {
+        const response = await postJson("/admin/ai/customer-query", {
+          locationId: selectedLocation,
+          question
+        });
+        setChatMessages((messages) => [
+          ...messages,
+          {
+            role: "assistant",
+            content: response.answer || "No answer returned.",
+            recordsUsed: response.recordsUsed
+          }
+        ]);
+      } catch (chatRequestError) {
+        setChatError(chatRequestError.message);
+      } finally {
+        setChatLoading(false);
+      }
+    }
 
     return React.createElement(
       "main",
@@ -157,7 +227,10 @@
       ),
       React.createElement(
         "section",
-        { className: "content-band" },
+        { className: "workspace-band" },
+        React.createElement(
+          "div",
+          { className: "content-band" },
         React.createElement(
           "div",
           { className: "toolbar" },
@@ -173,6 +246,80 @@
         !error && !loadingCustomers && sortedCustomers.length === 0
           ? React.createElement("div", { className: "notice" }, "No customer records found for this location.")
           : React.createElement(CustomerTable, { customers: sortedCustomers, loading: loadingCustomers })
+        ),
+        React.createElement(ChatPanel, {
+          selectedLocation,
+          chatMessages,
+          chatQuestion,
+          chatLoading,
+          chatError,
+          onQuestionChange: setChatQuestion,
+          onSubmit: submitChatQuestion
+        })
+      )
+    );
+  }
+
+  function ChatPanel({
+    selectedLocation,
+    chatMessages,
+    chatQuestion,
+    chatLoading,
+    chatError,
+    onQuestionChange,
+    onSubmit
+  }) {
+    return React.createElement(
+      "aside",
+      { className: "ai-panel" },
+      React.createElement(
+        "div",
+        { className: "ai-panel-header" },
+        React.createElement(
+          "div",
+          null,
+          React.createElement("h2", null, "Rental AI"),
+          React.createElement("p", null, selectedLocation || "No location selected")
+        ),
+        React.createElement("span", { className: "ai-model-pill" }, "Ollama")
+      ),
+      React.createElement(
+        "div",
+        { className: "chat-log" },
+        chatMessages.map((message, index) =>
+          React.createElement(
+            "div",
+            { key: `${message.role}-${index}`, className: `chat-message ${message.role}` },
+            React.createElement("div", { className: "chat-bubble" }, message.content),
+            message.role === "assistant" && message.recordsUsed > 0
+              ? React.createElement("span", { className: "chat-meta" }, `${message.recordsUsed} records used`)
+              : null
+          )
+        ),
+        chatLoading
+          ? React.createElement(
+              "div",
+              { className: "chat-message assistant" },
+              React.createElement("div", { className: "chat-bubble loading-bubble" }, "Thinking...")
+            )
+          : null
+      ),
+      chatError ? React.createElement("div", { className: "notice error chat-error" }, chatError) : null,
+      React.createElement(
+        "form",
+        { className: "chat-form", onSubmit },
+        React.createElement("textarea", {
+          value: chatQuestion,
+          onChange: (event) => onQuestionChange(event.target.value),
+          disabled: chatLoading,
+          rows: 3,
+          placeholder: "Who is assigned to stall A12?"
+        }),
+        React.createElement(
+          "button",
+          { type: "submit", disabled: chatLoading || !chatQuestion.trim() },
+          chatLoading ? "Sending" : "Ask"
+        )
       )
     );
   }

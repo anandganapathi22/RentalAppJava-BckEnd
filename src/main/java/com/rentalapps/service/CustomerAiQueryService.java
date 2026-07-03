@@ -44,7 +44,7 @@ public class CustomerAiQueryService {
 
     ChatClient.Builder chatClientBuilder = chatClientBuilderProvider.getIfAvailable();
     if (chatClientBuilder == null) {
-      throw new IllegalStateException("OpenAI chat model is not enabled");
+      throw new IllegalStateException("Spring AI chat model is not enabled");
     }
 
     List<CustomerBean> customers = customerDataService.getRentalAppsData2(locationId.trim());
