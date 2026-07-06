@@ -56,7 +56,7 @@ pipeline {
                     "$CODEQL_BIN" version
 
                     rm -rf "$CODEQL_DB_DIR" "$CODEQL_RESULTS_DIR"
-                    mkdir -p "$CODEQL_RESULTS_DIR"
+                    mkdir -p "$(dirname "$CODEQL_DB_DIR")" "$CODEQL_RESULTS_DIR"
 
                     "$CODEQL_BIN" database create "$CODEQL_DB_DIR" \
                       --language=java \
