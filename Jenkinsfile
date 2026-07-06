@@ -32,6 +32,7 @@ pipeline {
             steps {
                 sh 'chmod +x mvnw'
                 sh './mvnw -B clean verify'
+                junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             }
         }
 
@@ -54,6 +55,7 @@ pipeline {
                       fi
                     fi
                     "$CODEQL_BIN" version
+                    "$CODEQL_BIN" pack download codeql/java-queries
 
                     rm -rf "$CODEQL_DB_DIR" "$CODEQL_RESULTS_DIR"
                     mkdir -p "$(dirname "$CODEQL_DB_DIR")" "$CODEQL_RESULTS_DIR"
@@ -63,6 +65,7 @@ pipeline {
                       --source-root=. \
                       --command="./mvnw -B -DskipTests clean package"
 
+                    mkdir -p "$CODEQL_RESULTS_DIR"
                     "$CODEQL_BIN" database analyze "$CODEQL_DB_DIR" \
                       codeql/java-queries:codeql-suites/java-security-extended.qls \
                       --format=sarifv2.1.0 \
@@ -138,7 +141,6 @@ pipeline {
 
     post {
         always {
-            junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             archiveArtifacts allowEmptyArchive: true, artifacts: 'target/*.war,target/*.jar,target/codeql/*.sarif'
         }
     }
