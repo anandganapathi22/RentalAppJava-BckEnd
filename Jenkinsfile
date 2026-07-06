@@ -83,19 +83,22 @@ pipeline {
                 }
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'github-rentalapp', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
-                    sh '''
-                        set -eux
-                        CODEQL_BIN="$(command -v codeql || true)"
-                        if [ -z "$CODEQL_BIN" ]; then
-                          CODEQL_BIN=".tools/codeql/codeql"
-                        fi
-                        "$CODEQL_BIN" github upload-results \
-                          --repository="$GITHUB_REPOSITORY" \
-                          --ref="refs/heads/${BRANCH_NAME:-main}" \
-                          --commit="$GIT_COMMIT" \
-                          --sarif="$CODEQL_SARIF"
-                    '''
+                catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                    withCredentials([usernamePassword(credentialsId: 'github-rentalapp', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                        sh '''
+                            set -eux
+                            CODEQL_BIN="$(command -v codeql || true)"
+                            if [ -z "$CODEQL_BIN" ]; then
+                              CODEQL_BIN=".tools/codeql/codeql"
+                            fi
+                            "$CODEQL_BIN" github upload-results \
+                              --repository="$GITHUB_REPOSITORY" \
+                              --ref="refs/heads/${BRANCH_NAME:-main}" \
+                              --commit="$GIT_COMMIT" \
+                              --sarif="$CODEQL_SARIF"
+                        '''
+                    }
+                    echo 'CodeQL SARIF upload completed.'
                 }
             }
         }
