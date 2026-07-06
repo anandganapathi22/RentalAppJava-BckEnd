@@ -226,14 +226,15 @@ Or run `RentalAppsListenerApplication.main()` from your IDE.
 
 ## Jenkins CI/CD
 
-The repository includes a Jenkins pipeline in `Jenkinsfile`.
+The repository includes a Jenkins pipeline in `Jenkinsfile`. It has three flows selected by `PIPELINE_FLOW`.
 
-On every checkout or pull request build, Jenkins runs:
+`main` is the normal first build. It runs:
 
 1. `./mvnw -B clean verify` as the pre-merge build and test gate.
-2. CodeQL database creation for Java using the Maven package command.
-3. CodeQL analysis with the Java security extended query suite.
-4. Artifact archival for the WAR/JAR and `target/codeql/codeql-results.sarif`.
+2. CodeQL database creation and Java security analysis.
+3. Optional CodeQL SARIF upload.
+4. Dev deployment only.
+5. Artifact archival for the WAR/JAR and `target/codeql/codeql-results.sarif`.
 
 The local Jenkins image under `jenkins-local/` installs the CodeQL CLI and uses `Jenkinsfile` for the seeded
 `RentalAppJava-BckEnd` job. Start it with:
@@ -247,21 +248,24 @@ Pipeline parameters:
 
 | Parameter | Purpose |
 |---|---|
-| `RUN_CODEQL` | Enables or disables the CodeQL stage. Default: `true`. |
+| `PIPELINE_FLOW` | `main`, `cd-promote`, or `cd-deploy`. Default: `main`. |
+| `TARGET_ENV` | Used only by `cd-deploy`; choose `dev`, `stage`, or `prod`. |
+| `RUN_CODEQL` | Enables or disables CodeQL for the `main` flow. Default: `true`. |
 | `UPLOAD_CODEQL_RESULTS` | Uploads SARIF to GitHub code scanning when enabled. Requires a valid `github-rentalapp` credential and GitHub code scanning access. |
-| `DEPLOY_ENV` | Manually runs the dev, stage, or prod deploy gate. |
 | `GITHUB_REPOSITORY` | Repository slug used for optional SARIF upload. |
 
-Deployment stages are wired as guarded hooks:
+Promotion sequence:
 
-| Stage | Trigger |
+| Run | Parameter | Result |
 |---|---|
-| Dev | `develop` branch or `DEPLOY_ENV=dev` |
-| Stage | `stage` branch or `DEPLOY_ENV=stage`, with manual approval |
-| Prod | `main` branch or `DEPLOY_ENV=prod`, with manual approval |
+| First build | `PIPELINE_FLOW=main` | Build, test, CodeQL, deploy to dev. |
+| First promotion | `PIPELINE_FLOW=cd-promote` | Promote the dev release to stage after approval. |
+| Second promotion | `PIPELINE_FLOW=cd-promote` | Promote the stage release to prod after approval. |
+| Direct deployment | `PIPELINE_FLOW=cd-deploy`, `TARGET_ENV=<env>` | Deploy directly to the selected environment after approval. |
 
-The deploy hook is `scripts/jenkins/deploy.sh`. Replace the echo-only placeholder with the real deployment command
-for your target platform, such as Tomcat, Kubernetes, ECS, or another release system.
+The deploy hook is `scripts/jenkins/deploy.sh`, and promotion sequencing is handled by `scripts/jenkins/promote.sh`.
+Replace the echo-only deployment placeholder with the real command for your target platform, such as Tomcat,
+Kubernetes, ECS, or another release system.
 
 ## UI Integration
 

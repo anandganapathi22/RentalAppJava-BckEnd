@@ -3,6 +3,7 @@ HELP.md
 target/
 .codeql-db/
 target/codeql/
+.jenkins/
 data/*.db
 jenkins-local/home/
 !.mvn/wrapper/maven-wrapper.jar
