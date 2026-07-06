@@ -42,15 +42,28 @@ pipeline {
             steps {
                 sh '''
                     set -eux
+                    CODEQL_BIN="$(command -v codeql || true)"
+                    if [ -z "$CODEQL_BIN" ]; then
+                      CODEQL_BIN=".tools/codeql/codeql"
+                      if [ ! -x "$CODEQL_BIN" ]; then
+                        rm -rf .tools/codeql .tools/codeql.zip
+                        mkdir -p .tools
+                        curl -L -o .tools/codeql.zip https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-linux64.zip
+                        unzip -q .tools/codeql.zip -d .tools
+                        rm .tools/codeql.zip
+                      fi
+                    fi
+                    "$CODEQL_BIN" version
+
                     rm -rf "$CODEQL_DB_DIR" "$CODEQL_RESULTS_DIR"
                     mkdir -p "$CODEQL_RESULTS_DIR"
 
-                    codeql database create "$CODEQL_DB_DIR" \
+                    "$CODEQL_BIN" database create "$CODEQL_DB_DIR" \
                       --language=java \
                       --source-root=. \
                       --command="./mvnw -B -DskipTests clean package"
 
-                    codeql database analyze "$CODEQL_DB_DIR" \
+                    "$CODEQL_BIN" database analyze "$CODEQL_DB_DIR" \
                       codeql/java-queries:codeql-suites/java-security-extended.qls \
                       --format=sarifv2.1.0 \
                       --output="$CODEQL_SARIF" \
@@ -70,7 +83,11 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-rentalapp', usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
                     sh '''
                         set -eux
-                        codeql github upload-results \
+                        CODEQL_BIN="$(command -v codeql || true)"
+                        if [ -z "$CODEQL_BIN" ]; then
+                          CODEQL_BIN=".tools/codeql/codeql"
+                        fi
+                        "$CODEQL_BIN" github upload-results \
                           --repository="$GITHUB_REPOSITORY" \
                           --ref="refs/heads/${BRANCH_NAME:-main}" \
                           --commit="$GIT_COMMIT" \
