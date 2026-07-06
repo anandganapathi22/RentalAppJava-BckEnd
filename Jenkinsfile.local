@@ -7,9 +7,8 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'PIPELINE_FLOW', choices: ['main', 'cd-promote', 'cd-deploy'], description: 'main builds, scans, and deploys dev. cd-promote advances dev->stage then stage->prod. cd-deploy deploys a selected environment.')
-        choice(name: 'TARGET_ENV', choices: ['auto', 'dev', 'stage', 'prod'], description: 'Used by cd-deploy. Leave auto for main and cd-promote.')
-        booleanParam(name: 'RUN_CODEQL', defaultValue: true, description: 'Run CodeQL security analysis during the main CI flow.')
+        choice(name: 'DEPLOY_ENV', choices: ['DEV', 'STAGE', 'PROD'], description: 'Choose the environment to deploy.')
+        booleanParam(name: 'RUN_CODEQL', defaultValue: true, description: 'Run CodeQL security analysis before deployment.')
         booleanParam(name: 'UPLOAD_CODEQL_RESULTS', defaultValue: false, description: 'Upload CodeQL SARIF to GitHub code scanning. Requires GitHub code scanning access.')
         string(name: 'GITHUB_REPOSITORY', defaultValue: 'anandganapathi22/RentalAppJava-BckEnd', description: 'owner/repo for optional CodeQL SARIF upload.')
     }
@@ -20,7 +19,6 @@ pipeline {
         CODEQL_RESULTS_DIR = 'target/codeql'
         CODEQL_SARIF = 'target/codeql/codeql-results.sarif'
         MAVEN_OPTS = '-Dmaven.repo.local=.m2/repository'
-        PROMOTION_STATE_FILE = '.jenkins/promotion-state'
     }
 
     stages {
@@ -31,22 +29,16 @@ pipeline {
             }
         }
 
-        stage('main: Build and Test') {
-            when {
-                expression { return params.PIPELINE_FLOW == 'main' }
-            }
+        stage('Build and Test') {
             steps {
                 sh './mvnw -B clean verify'
                 junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             }
         }
 
-        stage('main: CodeQL') {
+        stage('CodeQL') {
             when {
-                allOf {
-                    expression { return params.PIPELINE_FLOW == 'main' }
-                    expression { return params.RUN_CODEQL }
-                }
+                expression { return params.RUN_CODEQL }
             }
             steps {
                 sh '''
@@ -83,10 +75,9 @@ pipeline {
             }
         }
 
-        stage('main: Upload CodeQL Results') {
+        stage('Upload CodeQL Results') {
             when {
                 allOf {
-                    expression { return params.PIPELINE_FLOW == 'main' }
                     expression { return params.RUN_CODEQL }
                     expression { return params.UPLOAD_CODEQL_RESULTS }
                 }
@@ -109,39 +100,9 @@ pipeline {
             }
         }
 
-        stage('main: Deploy Dev') {
-            when {
-                expression { return params.PIPELINE_FLOW == 'main' }
-            }
+        stage('Deploy Selected Environment') {
             steps {
-                sh 'bash scripts/jenkins/deploy.sh dev target/*.war'
-                sh 'mkdir -p .jenkins && printf "dev\\n" > "$PROMOTION_STATE_FILE"'
-            }
-        }
-
-        stage('cd-promote: Promote') {
-            when {
-                expression { return params.PIPELINE_FLOW == 'cd-promote' }
-            }
-            steps {
-                input message: 'Promote the current release to the next environment?', ok: 'Promote'
-                sh 'bash scripts/jenkins/promote.sh "$PROMOTION_STATE_FILE" target/*.war'
-            }
-        }
-
-        stage('cd-deploy: Direct Deploy') {
-            when {
-                expression { return params.PIPELINE_FLOW == 'cd-deploy' }
-            }
-            steps {
-                script {
-                    if (params.TARGET_ENV == 'auto') {
-                        error('TARGET_ENV must be dev, stage, or prod for cd-deploy.')
-                    }
-                }
-                input message: "Deploy directly to ${params.TARGET_ENV}?", ok: 'Deploy'
-                sh 'bash scripts/jenkins/deploy.sh "$TARGET_ENV" target/*.war'
-                sh 'mkdir -p .jenkins && printf "%s\\n" "$TARGET_ENV" > "$PROMOTION_STATE_FILE"'
+                sh 'bash scripts/jenkins/deploy.sh "$(printf "%s" "$DEPLOY_ENV" | tr "[:upper:]" "[:lower:]")" target/*.war'
             }
         }
     }

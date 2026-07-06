@@ -226,14 +226,15 @@ Or run `RentalAppsListenerApplication.main()` from your IDE.
 
 ## Jenkins CI/CD
 
-The repository includes a Jenkins pipeline in `Jenkinsfile`. It has three flows selected by `PIPELINE_FLOW`.
+The repository includes a Jenkins pipeline in `Jenkinsfile`. Use **Build with Parameters** and choose `DEPLOY_ENV`
+from `DEV`, `STAGE`, or `PROD`.
 
-`main` is the normal first build. It runs:
+Each run does the following:
 
 1. `./mvnw -B clean verify` as the pre-merge build and test gate.
 2. CodeQL database creation and Java security analysis.
 3. Optional CodeQL SARIF upload.
-4. Dev deployment only.
+4. Deployment only to the selected `DEPLOY_ENV`.
 5. Artifact archival for the WAR/JAR and `target/codeql/codeql-results.sarif`.
 
 The local Jenkins image under `jenkins-local/` installs the CodeQL CLI and uses `Jenkinsfile` for the seeded
@@ -248,24 +249,13 @@ Pipeline parameters:
 
 | Parameter | Purpose |
 |---|---|
-| `PIPELINE_FLOW` | `main`, `cd-promote`, or `cd-deploy`. Default: `main`. |
-| `TARGET_ENV` | Used only by `cd-deploy`; choose `dev`, `stage`, or `prod`. |
-| `RUN_CODEQL` | Enables or disables CodeQL for the `main` flow. Default: `true`. |
+| `DEPLOY_ENV` | Deployment target: `DEV`, `STAGE`, or `PROD`. |
+| `RUN_CODEQL` | Enables or disables CodeQL before deployment. Default: `true`. |
 | `UPLOAD_CODEQL_RESULTS` | Uploads SARIF to GitHub code scanning when enabled. Requires a valid `github-rentalapp` credential and GitHub code scanning access. |
 | `GITHUB_REPOSITORY` | Repository slug used for optional SARIF upload. |
 
-Promotion sequence:
-
-| Run | Parameter | Result |
-|---|---|
-| First build | `PIPELINE_FLOW=main` | Build, test, CodeQL, deploy to dev. |
-| First promotion | `PIPELINE_FLOW=cd-promote` | Promote the dev release to stage after approval. |
-| Second promotion | `PIPELINE_FLOW=cd-promote` | Promote the stage release to prod after approval. |
-| Direct deployment | `PIPELINE_FLOW=cd-deploy`, `TARGET_ENV=<env>` | Deploy directly to the selected environment after approval. |
-
-The deploy hook is `scripts/jenkins/deploy.sh`, and promotion sequencing is handled by `scripts/jenkins/promote.sh`.
-Replace the echo-only deployment placeholder with the real command for your target platform, such as Tomcat,
-Kubernetes, ECS, or another release system.
+The deploy hook is `scripts/jenkins/deploy.sh`. Replace the echo-only deployment placeholder with the real command for
+your target platform, such as Tomcat, Kubernetes, ECS, or another release system.
 
 ## UI Integration
 
