@@ -102,7 +102,10 @@ pipeline {
 
         stage('Deploy Selected Environment') {
             steps {
-                sh 'bash scripts/jenkins/deploy.sh "$(printf "%s" "$DEPLOY_ENV" | tr "[:upper:]" "[:lower:]")" target/*.war'
+                script {
+                    def selectedEnvironment = (params.DEPLOY_ENV ?: 'DEV').toLowerCase()
+                    sh "bash scripts/jenkins/deploy.sh ${selectedEnvironment} target/*.war"
+                }
             }
         }
     }
