@@ -224,6 +224,45 @@ mvn spring-boot:run
 
 Or run `RentalAppsListenerApplication.main()` from your IDE.
 
+## Jenkins CI/CD
+
+The repository includes a Jenkins pipeline in `Jenkinsfile`.
+
+On every checkout or pull request build, Jenkins runs:
+
+1. `./mvnw -B clean verify` as the pre-merge build and test gate.
+2. CodeQL database creation for Java using the Maven package command.
+3. CodeQL analysis with the Java security extended query suite.
+4. Artifact archival for the WAR/JAR and `target/codeql/codeql-results.sarif`.
+
+The local Jenkins image under `jenkins-local/` installs the CodeQL CLI and uses `Jenkinsfile` for the seeded
+`RentalAppJava-BckEnd` job. Start it with:
+
+```bash
+cd jenkins-local
+docker compose up --build
+```
+
+Pipeline parameters:
+
+| Parameter | Purpose |
+|---|---|
+| `RUN_CODEQL` | Enables or disables the CodeQL stage. Default: `true`. |
+| `UPLOAD_CODEQL_RESULTS` | Uploads SARIF to GitHub code scanning when enabled. Requires a valid `github-rentalapp` credential and GitHub code scanning access. |
+| `DEPLOY_ENV` | Manually runs the dev, stage, or prod deploy gate. |
+| `GITHUB_REPOSITORY` | Repository slug used for optional SARIF upload. |
+
+Deployment stages are wired as guarded hooks:
+
+| Stage | Trigger |
+|---|---|
+| Dev | `develop` branch or `DEPLOY_ENV=dev` |
+| Stage | `stage` branch or `DEPLOY_ENV=stage`, with manual approval |
+| Prod | `main` branch or `DEPLOY_ENV=prod`, with manual approval |
+
+The deploy hook is `scripts/jenkins/deploy.sh`. Replace the echo-only placeholder with the real deployment command
+for your target platform, such as Tomcat, Kubernetes, ECS, or another release system.
+
 ## UI Integration
 
 1. Build the React UI app: `npm run build`

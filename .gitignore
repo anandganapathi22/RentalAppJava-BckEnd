@@ -1,6 +1,8 @@
 HELP.md
 .env
 target/
+.codeql-db/
+target/codeql/
 data/*.db
 jenkins-local/home/
 !.mvn/wrapper/maven-wrapper.jar
