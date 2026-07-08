@@ -305,11 +305,11 @@ Each run does the following:
 4. Deployment only to the selected `DEPLOY_ENV`.
 5. Artifact archival for the WAR/JAR and `target/codeql/codeql-results.sarif`.
 
-The local Jenkins image under `jenkins-local/` installs the CodeQL CLI and uses `Jenkinsfile` for the seeded
+The local Jenkins image under `G:\Jenkins` installs the CodeQL CLI and uses `Jenkinsfile` for the seeded
 `RentalAppJava-BckEnd` job. Start it with:
 
 ```bash
-cd jenkins-local
+cd G:\Jenkins
 docker compose up --build
 ```
 
