@@ -50,7 +50,7 @@ src/main/java/com/rentalapps/
   config/                              # application, security, database, and scheduler config
   configmq/                            # IBM MQ connection factory setup
   consumer/                            # inbound MQ and Kafka consumers
-  controller/                          # REST and UI controllers
+  controller/                          # REST API controllers
   exception/                           # application exceptions and global handlers
   model/                               # domain/event models
   scheduler/                           # scheduled jobs
@@ -61,9 +61,9 @@ src/main/java/com/rentalapps/
 
 ## API Endpoints
 
-## Architecture Console
+## Architecture API
 
-The app serves a local architecture console at `/` and `/admin`. It models the Kafka-based target architecture with
+The app exposes local architecture endpoints for the separated UI. They model the Kafka-based target architecture with
 local topic counters, event publishing, display projections, and audit history.
 
 Key endpoints:
@@ -280,6 +280,18 @@ mvn spring-boot:run
 
 Or run `RentalAppsListenerApplication.main()` from your IDE.
 
+The separated React UI lives at `G:\rental-applications-ui` and runs independently:
+
+```bash
+cd G:\rental-applications-ui
+npm install
+npm run dev
+```
+
+The Vite dev server runs on `http://localhost:5173` and proxies API calls to `http://localhost:8081` by default.
+Override the backend target with `VITE_BACKEND_URL`. For deployed UIs that call the backend directly, configure
+`RENTAL_UI_ALLOWED_ORIGINS` on the backend as a comma-separated list of allowed browser origins.
+
 ## Jenkins CI/CD
 
 The repository includes a Jenkins pipeline in `Jenkinsfile`. Use **Build with Parameters** and choose `DEPLOY_ENV`
@@ -315,10 +327,16 @@ your target platform, such as Tomcat, Kubernetes, ECS, or another release system
 
 ## UI Integration
 
-1. Build the React UI app: `npm run build`
-2. Copy the `build/` output into `src/main/resources/static/` in this project.
+The React UI is separated into `G:\rental-applications-ui` as a full npm/Vite project. Build it independently:
 
-The `RentalAppsAdminController` serves `/index.html` for `/`, `/admin`, and `/admin/{path}` routes.
+```bash
+cd G:\rental-applications-ui
+npm run build
+```
+
+The backend no longer serves React static assets from `src/main/resources/static/`. Deploy the UI output from
+`G:\rental-applications-ui\dist\` to a static host or frontend pipeline, and point it at the backend with
+`VITE_API_BASE_URL` when an absolute API URL is required.
 
 ## Actuator Endpoints
 
