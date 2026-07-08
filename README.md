@@ -207,9 +207,65 @@ Example JSON message:
   "oneClub": "OC123",
   "ra": "RA100",
   "stall": "A12",
-  "arrivalDate": "07/02",
+  "arrivalDate": "07/02/2026",
   "arrivalTime": "10:30"
 }
+```
+
+### RabbitMQ
+
+RabbitMQ consumption is optional and is intended for local Docker testing. The RabbitMQ consumer accepts the same JSON
+or XML payload shapes as the Kafka consumer and delegates to the existing queue processing flow, so consumed messages
+are written to the configured database.
+
+The root `docker-compose.yml` starts RabbitMQ with the management UI and enables RabbitMQ in the application container:
+
+```bash
+docker compose up --build
+```
+
+RabbitMQ endpoints:
+
+| Endpoint | Value |
+|---|---|
+| AMQP | `localhost:5672` |
+| Management UI | `http://localhost:15672` |
+| Username/password | `guest` / `guest` |
+| Exchange | `rental.events` |
+| Queue | `rental.events.local` |
+| Routing key | `rental.events` |
+
+To run outside Docker, enable RabbitMQ with environment variables:
+
+```powershell
+$env:RENTAL_RABBITMQ_ENABLED="true"
+$env:SPRING_RABBITMQ_HOST="localhost"
+$env:SPRING_RABBITMQ_PORT="5672"
+$env:SPRING_RABBITMQ_USERNAME="guest"
+$env:SPRING_RABBITMQ_PASSWORD="guest"
+```
+
+Post a local event to RabbitMQ through the app:
+
+```bash
+curl -X POST http://localhost:8081/api/rabbitmq/events \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "add",
+    "locationCode": "OKC11",
+    "customerName": "Smith John",
+    "oneClub": "OC123",
+    "ra": "RA100",
+    "stall": "A12",
+    "arrivalDate": "07/02/2026",
+    "arrivalTime": "10:30"
+  }'
+```
+
+The RabbitMQ listener consumes from `rental.events.local` and persists the customer. Verify the DB write with:
+
+```bash
+curl "http://localhost:8081/StallDetails2?locationId=OKC11"
 ```
 
 ## Local Setup

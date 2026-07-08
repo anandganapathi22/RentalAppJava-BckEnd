@@ -35,18 +35,23 @@ public class KafkaRentalEventService {
 
   public void process(String topic, String key, Headers headers, String payload)
       throws IOException, ApplicationException {
+    process(topic, key, headerValue(headers, "locationCode"), payload);
+  }
+
+  public void process(String source, String key, String locationCodeHeader, String payload)
+      throws IOException, ApplicationException {
     if (StringUtils.isBlank(payload)) {
-      LOGGER.warn("Skipping blank Kafka payload from topic {}", topic);
+      LOGGER.warn("Skipping blank rental event payload from {}", source);
       return;
     }
 
     CwaMessageBean cwaMessageBean = toCwaMessageBean(payload);
-    String locationCode = resolveLocationCode(cwaMessageBean, key, headers);
+    String locationCode = resolveLocationCode(cwaMessageBean, key, locationCodeHeader);
     if (StringUtils.isBlank(locationCode)) {
-      throw new IllegalArgumentException("Kafka rental event must include locationCode, key, or locationCode header");
+      throw new IllegalArgumentException("Rental event must include locationCode, key, or locationCode header");
     }
 
-    LOGGER.info("Persisting Kafka rental event from topic {} for location {}", topic, locationCode);
+    LOGGER.info("Persisting rental event from {} for location {}", source, locationCode);
     customerDataService.persistQueueData(locationCode, cwaMessageBean);
   }
 
@@ -71,9 +76,9 @@ public class KafkaRentalEventService {
     return cwaMessageBean;
   }
 
-  private String resolveLocationCode(CwaMessageBean cwaMessageBean, String key, Headers headers) {
+  private String resolveLocationCode(CwaMessageBean cwaMessageBean, String key, String headerLocationCode) {
     return StringUtils.upperCase(StringUtils.trimToNull(
-        firstRentalLocation(cwaMessageBean, key, headerValue(headers, "locationCode"))));
+        firstRentalLocation(cwaMessageBean, key, headerLocationCode)));
   }
 
   private String firstRentalLocation(CwaMessageBean cwaMessageBean, String key, String headerLocationCode) {

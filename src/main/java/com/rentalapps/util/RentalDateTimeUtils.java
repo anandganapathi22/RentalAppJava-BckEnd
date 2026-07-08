@@ -143,12 +143,17 @@ public class RentalDateTimeUtils {
 
   /** Ensures month and day components of a date string are zero-padded to two digits. */
   public static String getTwoDigitDayMonth(String dateString) {
-    String  output = "";
+    if (dateString == null) {
+      throw new IllegalArgumentException("Arrival date is required in MM/dd/yyyy format");
+    }
     String[] str = dateString.split("/");
+    if (str.length != 3) {
+      throw new IllegalArgumentException("Arrival date must be in MM/dd/yyyy format: " + dateString);
+    }
     int month = Integer.parseInt(str[0]);
     int day = Integer.parseInt(str[1]);
     int year = Integer.parseInt(str[2]);
-    output = String.format("%02d/%02d/%d", month, day, year);
+    String output = String.format("%02d/%02d/%d", month, day, year);
     logger.info("Input date:" + dateString + ", Formatted date:" + output);
     return output;
   }

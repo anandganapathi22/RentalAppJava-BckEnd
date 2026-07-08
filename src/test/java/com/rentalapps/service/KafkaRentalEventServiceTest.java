@@ -24,7 +24,7 @@ class KafkaRentalEventServiceTest {
           "oneClub": "OC123",
           "ra": "RA100",
           "stall": "A12",
-          "arrivalDate": "07/02",
+          "arrivalDate": "07/02/2026",
           "arrivalTime": "10:30"
         }
         """;
@@ -48,7 +48,7 @@ class KafkaRentalEventServiceTest {
             <oneclub>OC123</oneclub>
             <ra>RA100</ra>
             <stall>A12</stall>
-            <arrival-date>07/02</arrival-date>
+            <arrival-date>07/02/2026</arrival-date>
             <arrival-time>10:30</arrival-time>
           </rental>
         </CwaMessageBean>

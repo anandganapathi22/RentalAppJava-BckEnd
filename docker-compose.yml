@@ -1,4 +1,21 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rental-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
   rental-applications:
     build: .
     image: rental-applications:local
@@ -13,5 +30,47 @@ services:
       SPRING_DATASOURCE_USERNAME: "sa"
       SPRING_DATASOURCE_PASSWORD: ""
       SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
+      RENTAL_RABBITMQ_ENABLED: "true"
+      SPRING_RABBITMQ_HOST: "rabbitmq"
+      SPRING_RABBITMQ_PORT: "5672"
+      SPRING_RABBITMQ_USERNAME: "guest"
+      SPRING_RABBITMQ_PASSWORD: "guest"
     volumes:
       - ./data:/app/data
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rental-ollama
+    ports:
+      - "11434:11434"
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: rental-open-webui
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_AUTH=false
+    volumes:
+      - open-webui-data:/app/backend/data
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+volumes:
+  rabbitmq-data:
+  ollama-data:
+  open-webui-data:

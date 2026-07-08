@@ -38,6 +38,11 @@ rental:
       rental-us: ${KAFKA_TOPIC_RENTAL_US:rental-events-us}
       rental-eu: ${KAFKA_TOPIC_RENTAL_EU:rental-events-eu}
       adhoc: ${KAFKA_TOPIC_ADHOC:adhoc-goldboard-events}
+  rabbitmq:
+    enabled: ${RENTAL_RABBITMQ_ENABLED:false}
+    exchange: ${RENTAL_RABBITMQ_EXCHANGE:rental.events}
+    queue: ${RENTAL_RABBITMQ_QUEUE:rental.events.local}
+    routing-key: ${RENTAL_RABBITMQ_ROUTING_KEY:rental.events}
 server:
   error:
     include-exception: true
