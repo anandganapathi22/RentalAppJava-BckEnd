@@ -56,9 +56,6 @@ public class RentalAppsController {
         throws NoContentException, IOException {
     logger.info("GetStallDetails::location:->{}", locationId);
     custBeanListLite = customerDataService.getRentalAppsData(locationId);
-    if (custBeanListLite.size() == 0) {
-      throw new NoContentException();
-    }
     return new ResponseEntity<>(custBeanListLite, HttpStatus.OK);
   }
 
@@ -68,9 +65,6 @@ public class RentalAppsController {
         throws NoContentException, IOException {
     logger.info("GetStallDetails::location:->{}", locationId);
     custBeanList = customerDataService.getRentalAppsData2(locationId);
-    if (custBeanList.size() == 0) {
-      throw new NoContentException();
-    }
     return new ResponseEntity<>(custBeanList, HttpStatus.OK);
   }
   
