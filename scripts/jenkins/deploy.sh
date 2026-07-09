@@ -24,6 +24,22 @@ if [[ ${#artifacts[@]} -eq 0 ]]; then
   exit 1
 fi
 
-echo "Deployment hook for $environment"
+if [[ ! -f docker-compose.yml ]]; then
+  echo "docker-compose.yml was not found in the workspace."
+  exit 1
+fi
+
+if docker compose version >/dev/null 2>&1; then
+  compose_cmd=(docker compose)
+elif command -v docker-compose >/dev/null 2>&1; then
+  compose_cmd=(docker-compose)
+else
+  echo "Docker Compose is not available. Install Docker Compose on the Jenkins agent."
+  exit 1
+fi
+
+echo "Deploying $environment to Docker"
 echo "Artifact: ${artifacts[0]}"
-echo "Add the real $environment deployment command here when the target platform is known."
+
+"${compose_cmd[@]}" up -d --build --force-recreate rental-applications
+"${compose_cmd[@]}" ps rental-applications

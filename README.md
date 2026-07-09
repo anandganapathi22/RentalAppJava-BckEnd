@@ -322,8 +322,15 @@ Pipeline parameters:
 | `UPLOAD_CODEQL_RESULTS` | Uploads SARIF to GitHub code scanning when enabled. Requires a valid `github-rentalapp` credential and GitHub code scanning access. |
 | `GITHUB_REPOSITORY` | Repository slug used for optional SARIF upload. |
 
-The deploy hook is `scripts/jenkins/deploy.sh`. Replace the echo-only deployment placeholder with the real command for
-your target platform, such as Tomcat, Kubernetes, ECS, or another release system.
+The deploy hook is `scripts/jenkins/deploy.sh`. It rebuilds and recreates the Docker Compose
+`rental-applications` service from the WAR produced by Jenkins:
+
+```bash
+docker compose up -d --build --force-recreate rental-applications
+```
+
+The Jenkins agent must have Docker access and Docker Compose installed. If Jenkins itself runs in Docker, mount the
+Docker socket or otherwise point the agent at the Docker daemon that should host the deployed container.
 
 ## UI Integration
 
