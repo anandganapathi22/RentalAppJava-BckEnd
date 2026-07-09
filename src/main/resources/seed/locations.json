@@ -1,0 +1,797 @@
+[
+    {
+        "hertzLocationCode":  "AZPHO11",
+        "displayName":  "AZPHO11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "BEBRU50",
+        "displayName":  "Europe Location BEBRU50",
+        "timeZone":  "Europe/Brussels"
+    },
+    {
+        "hertzLocationCode":  "BECRL50",
+        "displayName":  "Europe Location BECRL50",
+        "timeZone":  "Europe/Brussels"
+    },
+    {
+        "hertzLocationCode":  "CABUR11",
+        "displayName":  "CABUR11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CALAX15",
+        "displayName":  "CALAX15",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CAOAK12",
+        "displayName":  "CAOAK12",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CAONT10",
+        "displayName":  "CAONT10",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CASAC11",
+        "displayName":  "CASAC11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CASDI11",
+        "displayName":  "CASDI11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CASFO15",
+        "displayName":  "CASFO15",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CASJO11",
+        "displayName":  "CASJO11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "CNMON11",
+        "displayName":  "CNMON11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "CNTOR11",
+        "displayName":  "CNTOR11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "CNTOR18",
+        "displayName":  "CNTOR18",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "CODEN11",
+        "displayName":  "CODEN11",
+        "timeZone":  "America/Denver"
+    },
+    {
+        "hertzLocationCode":  "CTHAR11",
+        "displayName":  "CTHAR11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "DCDCA11",
+        "displayName":  "DCDCA11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "DCIAD26",
+        "displayName":  "DCIAD26",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "FLFLA11",
+        "displayName":  "FLFLA11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "FLFMY11",
+        "displayName":  "FLFMY11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "FLMIA15",
+        "displayName":  "FLMIA15",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "FLORL16",
+        "displayName":  "FLORL16",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "FLTAM11",
+        "displayName":  "FLTAM11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "FLWES11",
+        "displayName":  "FLWES11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "FRAVI90",
+        "displayName":  "Europe Location FRAVI90",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRBOD50",
+        "displayName":  "Europe Location FRBOD50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRBOD90",
+        "displayName":  "Europe Location FRBOD90",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRBVA50",
+        "displayName":  "Europe Location FRBVA50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRBZR50",
+        "displayName":  "Europe Location FRBZR50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRCAN50",
+        "displayName":  "Europe Location FRCAN50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRCAN90",
+        "displayName":  "Europe Location FRCAN90",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRCDG50",
+        "displayName":  "Europe Location FRCDG50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRCER61",
+        "displayName":  "Europe Location FRCER61",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRGEN50",
+        "displayName":  "Europe Location FRGEN50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRHYE50",
+        "displayName":  "Europe Location FRHYE50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRLIL50",
+        "displayName":  "Europe Location FRLIL50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRLIL90",
+        "displayName":  "Europe Location FRLIL90",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRLYO50",
+        "displayName":  "Europe Location FRLYO50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRMLH50",
+        "displayName":  "Europe Location FRMLH50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRMPL50",
+        "displayName":  "Europe Location FRMPL50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRMRS50",
+        "displayName":  "Europe Location FRMRS50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRMRS90",
+        "displayName":  "Europe Location FRMRS90",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRNCE50",
+        "displayName":  "Europe Location FRNCE50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRNCE90",
+        "displayName":  "Europe Location FRNCE90",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRNTE50",
+        "displayName":  "Europe Location FRNTE50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRORY50",
+        "displayName":  "Europe Location FRORY50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRPAG91",
+        "displayName":  "Europe Location FRPAG91",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRPAR60",
+        "displayName":  "Europe Location FRPAR60",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRPAR61",
+        "displayName":  "Europe Location FRPAR61",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRPAR64",
+        "displayName":  "Europe Location FRPAR64",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRPAR66",
+        "displayName":  "Europe Location FRPAR66",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "FRTLS50",
+        "displayName":  "Europe Location FRTLS50",
+        "timeZone":  "Europe/Paris"
+    },
+    {
+        "hertzLocationCode":  "GAATL11",
+        "displayName":  "GAATL11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "GEBER50",
+        "displayName":  "Europe Location GEBER50",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEBER60",
+        "displayName":  "Europe Location GEBER60",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEBER62",
+        "displayName":  "Europe Location GEBER62",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEDUS50",
+        "displayName":  "Europe Location GEDUS50",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEFRA50",
+        "displayName":  "Europe Location GEFRA50",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEFRA53",
+        "displayName":  "Europe Location GEFRA53",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEHAJ50",
+        "displayName":  "Europe Location GEHAJ50",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEHAM50",
+        "displayName":  "Europe Location GEHAM50",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEMUC50",
+        "displayName":  "Europe Location GEMUC50",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GEOSB61",
+        "displayName":  "Europe Location GEOSB61",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "GESTR50",
+        "displayName":  "Europe Location GESTR50",
+        "timeZone":  "Europe/Berlin"
+    },
+    {
+        "hertzLocationCode":  "HIHON11",
+        "displayName":  "HIHON11",
+        "timeZone":  "Pacific/Honolulu"
+    },
+    {
+        "hertzLocationCode":  "HIKAH10",
+        "displayName":  "HIKAH10",
+        "timeZone":  "Pacific/Honolulu"
+    },
+    {
+        "hertzLocationCode":  "HIKAU10",
+        "displayName":  "HIKAU10",
+        "timeZone":  "Pacific/Honolulu"
+    },
+    {
+        "hertzLocationCode":  "HIKON11",
+        "displayName":  "HIKON11",
+        "timeZone":  "Pacific/Honolulu"
+    },
+    {
+        "hertzLocationCode":  "IADES11",
+        "displayName":  "IADES11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "ILMDW11",
+        "displayName":  "ILMDW11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "ILORD10",
+        "displayName":  "ILORD10",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "ININD11",
+        "displayName":  "ININD11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "ITAHO50",
+        "displayName":  "Europe Location ITAHO50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITBLG50",
+        "displayName":  "Europe Location ITBLG50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITBRI50",
+        "displayName":  "Europe Location ITBRI50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITBYG50",
+        "displayName":  "Europe Location ITBYG50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITCAG50",
+        "displayName":  "Europe Location ITCAG50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITCTA51",
+        "displayName":  "Europe Location ITCTA51",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITFLO50",
+        "displayName":  "Europe Location ITFLO50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITFLO60",
+        "displayName":  "Europe Location ITFLO60",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITFLO90",
+        "displayName":  "Europe Location ITFLO90",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITGVA50",
+        "displayName":  "Europe Location ITGVA50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITMIL50",
+        "displayName":  "Europe Location ITMIL50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITMIL51",
+        "displayName":  "Europe Location ITMIL51",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITMIL52",
+        "displayName":  "Europe Location ITMIL52",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITMIL60",
+        "displayName":  "Europe Location ITMIL60",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITMIL90",
+        "displayName":  "Europe Location ITMIL90",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITNAP50",
+        "displayName":  "Europe Location ITNAP50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITOLB50",
+        "displayName":  "Europe Location ITOLB50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITPMO51",
+        "displayName":  "Europe Location ITPMO51",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITPSA50",
+        "displayName":  "Europe Location ITPSA50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITROM50",
+        "displayName":  "Europe Location ITROM50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITROM51",
+        "displayName":  "Europe Location ITROM51",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITROM75",
+        "displayName":  "Europe Location ITROM75",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITTRN50",
+        "displayName":  "Europe Location ITTRN50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITTRN61",
+        "displayName":  "Europe Location ITTRN61",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITVCE50",
+        "displayName":  "Europe Location ITVCE50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "ITVRN50",
+        "displayName":  "Europe Location ITVRN50",
+        "timeZone":  "Europe/Rome"
+    },
+    {
+        "hertzLocationCode":  "KYLOU11",
+        "displayName":  "KYLOU11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "LANEW13",
+        "displayName":  "LANEW13",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "MALOG11",
+        "displayName":  "MALOG11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "MDBAL11",
+        "displayName":  "MDBAL11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "MIDAP13",
+        "displayName":  "MIDAP13",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "MNMIN10",
+        "displayName":  "MNMIN10",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "MNMIN11",
+        "displayName":  "MNMIN11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "MOKAN11",
+        "displayName":  "MOKAN11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "MOSTL11",
+        "displayName":  "MOSTL11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "NCCHA12",
+        "displayName":  "NCCHA12",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "NCRAL11",
+        "displayName":  "NCRAL11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "NEAMS50",
+        "displayName":  "Europe Location NEAMS50",
+        "timeZone":  "Europe/Amsterdam"
+    },
+    {
+        "hertzLocationCode":  "NJNEW11",
+        "displayName":  "NJNEW11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "NLAMS60",
+        "displayName":  "Europe Location NLAMS60",
+        "timeZone":  "Europe/Amsterdam"
+    },
+    {
+        "hertzLocationCode":  "NMABQ11",
+        "displayName":  "NMABQ11",
+        "timeZone":  "America/Denver"
+    },
+    {
+        "hertzLocationCode":  "NVLAS11",
+        "displayName":  "NVLAS11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "NYJFK10",
+        "displayName":  "NYJFK10",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "NYLGA10",
+        "displayName":  "NYLGA10",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "OHCIN11",
+        "displayName":  "OHCIN11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "OHCLE12",
+        "displayName":  "OHCLE12",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "OKOKC11",
+        "displayName":  "OKOKC11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "ORPDX11",
+        "displayName":  "ORPDX11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "PAPHI11",
+        "displayName":  "PAPHI11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "PAPIT11",
+        "displayName":  "PAPIT11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "RIPRO11",
+        "displayName":  "RIPRO11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "SPAGP50",
+        "displayName":  "Europe Location SPAGP50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPALC50",
+        "displayName":  "Europe Location SPALC50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPBCN50",
+        "displayName":  "Europe Location SPBCN50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPBCN61",
+        "displayName":  "Europe Location SPBCN61",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPBIO50",
+        "displayName":  "Europe Location SPBIO50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPIBZ50",
+        "displayName":  "Europe Location SPIBZ50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPMAD60",
+        "displayName":  "Europe Location SPMAD60",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPMAD97",
+        "displayName":  "Europe Location SPMAD97",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPMHN50",
+        "displayName":  "Europe Location SPMHN50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPPMI50",
+        "displayName":  "Europe Location SPPMI50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPSAN50",
+        "displayName":  "Europe Location SPSAN50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPSEV50",
+        "displayName":  "Europe Location SPSEV50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPSEV61",
+        "displayName":  "Europe Location SPSEV61",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "SPVLC50",
+        "displayName":  "Europe Location SPVLC50",
+        "timeZone":  "Europe/Madrid"
+    },
+    {
+        "hertzLocationCode":  "TNMEM11",
+        "displayName":  "TNMEM11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TNNAS11",
+        "displayName":  "TNNAS11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TXAUS15",
+        "displayName":  "TXAUS15",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TXDFW20",
+        "displayName":  "TXDFW20",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TXELP11",
+        "displayName":  "TXELP11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TXHOB24",
+        "displayName":  "TXHOB24",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TXIAH12",
+        "displayName":  "TXIAH12",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TXLOV11",
+        "displayName":  "TXLOV11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "TXSAT11",
+        "displayName":  "TXSAT11",
+        "timeZone":  "America/Chicago"
+    },
+    {
+        "hertzLocationCode":  "UKABZ50",
+        "displayName":  "Europe Location UKABZ50",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKBHX50",
+        "displayName":  "Europe Location UKBHX50",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKEDI50",
+        "displayName":  "Europe Location UKEDI50",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKLCN60",
+        "displayName":  "Europe Location UKLCN60",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKLGW50",
+        "displayName":  "Europe Location UKLGW50",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKLHR50",
+        "displayName":  "Europe Location UKLHR50",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKMAN50",
+        "displayName":  "Europe Location UKMAN50",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKNEW50",
+        "displayName":  "Europe Location UKNEW50",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UKSAU60",
+        "displayName":  "Europe Location UKSAU60",
+        "timeZone":  "Europe/London"
+    },
+    {
+        "hertzLocationCode":  "UTSAL11",
+        "displayName":  "UTSAL11",
+        "timeZone":  "America/Denver"
+    },
+    {
+        "hertzLocationCode":  "VARIC11",
+        "displayName":  "VARIC11",
+        "timeZone":  "America/New_York"
+    },
+    {
+        "hertzLocationCode":  "WASEA11",
+        "displayName":  "WASEA11",
+        "timeZone":  "America/Los_Angeles"
+    },
+    {
+        "hertzLocationCode":  "WIMIL12",
+        "displayName":  "WIMIL12",
+        "timeZone":  "America/Chicago"
+    }
+]

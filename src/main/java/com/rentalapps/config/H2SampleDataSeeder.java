@@ -21,15 +21,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 public class H2SampleDataSeeder {
 
   private static final Logger log = LoggerFactory.getLogger(H2SampleDataSeeder.class);
-  private static final int LOCATION_COUNT = 200;
-  private static final int CUSTOMER_COUNT = 1000;
-  private static final String[] TIME_ZONES = {
-      "America/Chicago",
-      "America/New_York",
-      "America/Los_Angeles",
-      "America/Denver",
-      "Europe/London"
+  private static final String[] LOCATION_CODES = {
+      "MNMIN10", "OKOKC11", "FLFMY11", "CAOAK12", "CODEN11", "NYLGA10", "FLTAM11", "AZPHO11",
+      "CASJO11", "FLWES11", "KYLOU11", "OHCLE12", "TXSAT11", "NMABQ11", "CASDI11", "RIPRO11",
+      "TXAUS15", "NCRAL11", "TXELP11", "MOSTL11", "NCCHA12", "DCIAD26", "MALOG11", "FLMIA15",
+      "NVLAS11", "MDBAL11", "FLFLA11", "TXLOV11", "CABUR11", "DCDCA11", "TXIAH12", "MOKAN11",
+      "TNNAS11", "TXDFW20", "ILMDW11", "NYJFK10", "WIMIL12", "CASAC11", "HIHON11", "CTHAR11",
+      "VARIC11", "GAATL11", "CAONT10", "TXHOB24", "PAPIT11", "OHCIN11", "ILORD10", "UTSAL11",
+      "CASFO15", "MIDAP13", "HIKAH10", "LANEW13", "HIKAU10", "MNMIN11", "WASEA11", "ORPDX11",
+      "TNMEM11", "HIKON11", "ININD11", "PAPHI11", "FLORL16", "CALAX15", "NJNEW11", "CNTOR11",
+      "CNTOR18", "CNMON11", "IADES11"
   };
+  private static final int LOCATION_COUNT = LOCATION_CODES.length;
+  private static final int CUSTOMER_COUNT = 1000;
   private static final String[] SOURCES = {"DASH", "MQ"};
   private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE;
   private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
@@ -63,10 +67,9 @@ public class H2SampleDataSeeder {
         + " (\"hertzLocationCode\", \"displayName\", \"timeZone\") values (?, ?, ?)";
 
     List<Object[]> batchArgs = new ArrayList<>(LOCATION_COUNT);
-    for (int i = 1; i <= LOCATION_COUNT; i++) {
-      String code = String.format(Locale.ROOT, "LOC%03d", i);
-      String displayName = String.format(Locale.ROOT, "RentalApps Location %03d", i);
-      String timeZone = TIME_ZONES[(i - 1) % TIME_ZONES.length];
+    for (String code : LOCATION_CODES) {
+      String displayName = code;
+      String timeZone = timeZoneFor(code);
       batchArgs.add(new Object[] {code, displayName, timeZone});
     }
 
@@ -85,7 +88,7 @@ public class H2SampleDataSeeder {
 
     for (int i = 1; i <= CUSTOMER_COUNT; i++) {
       LocalDateTime arrival = now.minusMinutes(i);
-      String locationCode = String.format(Locale.ROOT, "LOC%03d", ((i - 1) % LOCATION_COUNT) + 1);
+      String locationCode = LOCATION_CODES[(i - 1) % LOCATION_CODES.length];
       String customerId = String.format(Locale.ROOT, "CUST%05d", i);
       String customerName = String.format(Locale.ROOT, "Customer %04d", i);
       String stall = String.format(Locale.ROOT, "S-%03d", ((i - 1) % 500) + 1);
@@ -114,5 +117,17 @@ public class H2SampleDataSeeder {
 
   private String quoted(String identifier) {
     return "\"" + identifier.replace("\"", "\"\"") + "\"";
+  }
+
+  private String timeZoneFor(String locationCode) {
+    String region = locationCode.substring(0, 2);
+    return switch (region) {
+      case "AZ", "CA", "NV", "OR", "WA" -> "America/Los_Angeles";
+      case "CO", "NM", "UT" -> "America/Denver";
+      case "AL", "AR", "IA", "IL", "IN", "KY", "LA", "MI", "MN", "MO", "TN", "TX", "WI" -> "America/Chicago";
+      case "CN", "CT", "DC", "FL", "GA", "MA", "MD", "NC", "NJ", "NY", "OH", "PA", "RI", "VA" -> "America/New_York";
+      case "HI" -> "Pacific/Honolulu";
+      default -> "America/Chicago";
+    };
   }
 }
