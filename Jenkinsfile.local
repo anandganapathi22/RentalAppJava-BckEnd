@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        jdk 'jdk25'
-    }
-
     options {
         disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '20'))
@@ -23,8 +19,8 @@ pipeline {
         CODEQL_RESULTS_DIR = 'target/codeql'
         CODEQL_SARIF = 'target/codeql/codeql-results.sarif'
         MAVEN_OPTS = '-Dmaven.repo.local=.m2/repository'
-        JAVA_HOME = "${tool 'jdk25'}"
-        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+        JDK25_HOME = '.tools/jdk-25'
+        JDK25_URL = 'https://api.adoptium.net/v3/binary/latest/25/ga/linux/x64/jdk/hotspot/normal/eclipse'
     }
 
     stages {
@@ -35,9 +31,30 @@ pipeline {
             }
         }
 
+        stage('Install JDK 25') {
+            steps {
+                sh '''
+                    set -eux
+                    if [ ! -x "$JDK25_HOME/bin/java" ]; then
+                      rm -rf "$JDK25_HOME" .tools/jdk25.tar.gz .tools/jdk25-extract
+                      mkdir -p .tools/jdk25-extract
+                      curl -L -o .tools/jdk25.tar.gz "$JDK25_URL"
+                      tar -xzf .tools/jdk25.tar.gz -C .tools/jdk25-extract --strip-components=1
+                      mv .tools/jdk25-extract "$JDK25_HOME"
+                      rm .tools/jdk25.tar.gz
+                    fi
+                    "$JDK25_HOME/bin/java" -version
+                '''
+            }
+        }
+
         stage('Build and Test') {
             steps {
-                sh './mvnw -B clean verify'
+                sh '''
+                    export JAVA_HOME="$PWD/$JDK25_HOME"
+                    export PATH="$JAVA_HOME/bin:$PATH"
+                    ./mvnw -B clean verify
+                '''
                 junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
             }
         }
@@ -69,7 +86,7 @@ pipeline {
                     "$CODEQL_BIN" database create "$CODEQL_DB_DIR" \
                       --language=java \
                       --source-root=. \
-                      --command="./mvnw -B -DskipTests clean package"
+                      --command="export JAVA_HOME=$PWD/$JDK25_HOME && export PATH=$JAVA_HOME/bin:$PATH && ./mvnw -B -DskipTests clean package"
 
                     mkdir -p "$CODEQL_RESULTS_DIR"
                     "$CODEQL_BIN" database analyze "$CODEQL_DB_DIR" \
