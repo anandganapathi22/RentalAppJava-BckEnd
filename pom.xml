@@ -16,7 +16,7 @@
 	<description>Demo project for Rental Apps Proof of Concept</description>
 	<properties>
 		<revision>1.0.0-SNAPSHOT</revision>
-		<java.version>17</java.version>
+		<java.version>25</java.version>
 		<lombok.version>1.18.42</lombok.version>
 		<spring-ai.version>1.0.9</spring-ai.version>
 		<h2.version>2.1.214</h2.version>
