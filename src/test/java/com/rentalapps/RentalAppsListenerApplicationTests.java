@@ -2,8 +2,19 @@ package com.rentalapps;
 
 import net.javacrumbs.shedlock.core.LockProvider;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.blankOrNullString;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
     "goldSign.MQ.host.primary=localhost",
@@ -22,6 +33,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
     "db.tables.audit=rentalapps-audit-data",
     "db.tables.location=rentalapps-locations-data",
     "db.tables.shedlock=rentalapps-shedlock-data",
+    "db.tables.users=rentalapps-users-data",
     "gb.config.firstNameLengthCut=2",
     "gb.config.oldnessOfCustomerDataInMinutes=60",
     "gb.config.enableDeletionScheduler=false",
@@ -30,11 +42,33 @@ import org.springframework.boot.test.mock.mockito.MockBean;
     "gb.config.shadowTableEnable=false",
     "gb.config.shadowTableExpiryMonths=3"
 })
+@AutoConfigureMockMvc
 class RentalAppsListenerApplicationTests {
   @MockBean
   private LockProvider lockProvider;
 
+  @Autowired
+  private MockMvc mockMvc;
+
   @Test
   void contextLoads() {
+  }
+
+  @Test
+  void loginReturnsJwtForSeededDatabaseUser() throws Exception {
+    mockMvc.perform(post("/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"username\":\"admin\",\"password\":\"admin\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.accessToken", not(blankOrNullString())))
+        .andExpect(jsonPath("$.tokenType").value("Bearer"))
+        .andExpect(jsonPath("$.username").value("admin"))
+        .andExpect(jsonPath("$.role").value("ADMIN"));
+  }
+
+  @Test
+  void protectedEndpointRequiresBearerToken() throws Exception {
+    mockMvc.perform(get("/admin/locations"))
+        .andExpect(status().isUnauthorized());
   }
 }

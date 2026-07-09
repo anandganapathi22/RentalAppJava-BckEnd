@@ -34,6 +34,11 @@ public class ApplicationConfig {
     return env.getProperty("db.tables.shedlock");
   }
 
+  /** Returns the auth users table name. */
+  public String getUsersTable() {
+    return env.getProperty("db.tables.users");
+  }
+
   /** Returns the max character length used when truncating first names for display. */
   public String getFirstNameLengthCut() {
     return env.getProperty("gb.config.firstNameLengthCut");

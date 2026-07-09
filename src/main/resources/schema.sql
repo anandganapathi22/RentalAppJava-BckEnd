@@ -48,3 +48,12 @@ CREATE TABLE IF NOT EXISTS "rentalapps-shedlock-data" (
     "locked_at" TIMESTAMP,
     "locked_by" VARCHAR(255)
 );
+
+CREATE TABLE IF NOT EXISTS "rentalapps-users-data" (
+    "username" VARCHAR(128) PRIMARY KEY,
+    "passwordHash" VARCHAR(255) NOT NULL,
+    "role" VARCHAR(64) NOT NULL,
+    "enabled" BOOLEAN NOT NULL DEFAULT TRUE,
+    "createdDatetime" VARCHAR(64),
+    "updatedDatetime" VARCHAR(64)
+);
