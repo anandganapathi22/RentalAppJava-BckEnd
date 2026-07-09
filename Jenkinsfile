@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'jdk25'
+    }
+
     options {
         disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '20'))
@@ -19,6 +23,8 @@ pipeline {
         CODEQL_RESULTS_DIR = 'target/codeql'
         CODEQL_SARIF = 'target/codeql/codeql-results.sarif'
         MAVEN_OPTS = '-Dmaven.repo.local=.m2/repository'
+        JAVA_HOME = "${tool 'jdk25'}"
+        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
