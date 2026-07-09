@@ -66,6 +66,10 @@ pipeline {
             steps {
                 sh '''
                     set -eux
+                    export JAVA_HOME="$PWD/$JDK25_HOME"
+                    export PATH="$JAVA_HOME/bin:$PATH"
+                    java -version
+
                     CODEQL_BIN="$(command -v codeql || true)"
                     if [ -z "$CODEQL_BIN" ]; then
                       CODEQL_BIN=".tools/codeql/codeql"
@@ -86,7 +90,7 @@ pipeline {
                     "$CODEQL_BIN" database create "$CODEQL_DB_DIR" \
                       --language=java \
                       --source-root=. \
-                      --command="export JAVA_HOME=$PWD/$JDK25_HOME && export PATH=$JAVA_HOME/bin:$PATH && ./mvnw -B -DskipTests clean package"
+                      --command="./mvnw -B -DskipTests clean package"
 
                     mkdir -p "$CODEQL_RESULTS_DIR"
                     "$CODEQL_BIN" database analyze "$CODEQL_DB_DIR" \
