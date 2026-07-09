@@ -23,7 +23,8 @@ public class DatabaseStartupVerifier {
           appConfig.getDatabaseTable(),
           appConfig.getShadowTable(),
           appConfig.getLocationTable(),
-          appConfig.getShedlockTable()
+          appConfig.getShedlockTable(),
+          appConfig.getUsersTable()
       );
 
       try (Connection connection = dataSource.getConnection()) {

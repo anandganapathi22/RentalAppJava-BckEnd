@@ -35,6 +35,11 @@ services:
       SPRING_RABBITMQ_PORT: "5672"
       SPRING_RABBITMQ_USERNAME: "guest"
       SPRING_RABBITMQ_PASSWORD: "guest"
+      RENTAL_AUTH_USERNAME: "admin"
+      RENTAL_AUTH_PASSWORD: "admin"
+      RENTAL_AUTH_ROLE: "ADMIN"
+      RENTAL_AUTH_JWT_SECRET: "replace-this-local-docker-jwt-secret-with-a-long-random-value"
+      RENTAL_AUTH_TOKEN_EXPIRATION_SECONDS: "3600"
     volumes:
       - ./data:/app/data
     depends_on:

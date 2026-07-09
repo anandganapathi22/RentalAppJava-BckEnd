@@ -3,6 +3,8 @@ logging:
     root: INFO
     org.apache: INFO
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   ai:
     model:
       chat: ${SPRING_AI_MODEL_CHAT:none}
@@ -30,6 +32,12 @@ spring:
     init:
       mode: always
 rental:
+  auth:
+    username: ${RENTAL_AUTH_USERNAME:admin}
+    password: ${RENTAL_AUTH_PASSWORD:admin}
+    role: ${RENTAL_AUTH_ROLE:ADMIN}
+    jwt-secret: ${RENTAL_AUTH_JWT_SECRET:local-development-jwt-secret-change-me}
+    token-expiration-seconds: ${RENTAL_AUTH_TOKEN_EXPIRATION_SECONDS:3600}
   ui:
     allowed-origins: ${RENTAL_UI_ALLOWED_ORIGINS:http://localhost:5173}
   kafka:
@@ -86,6 +94,7 @@ db:
     audit: rentalapps-audit-data
     location: rentalapps-locations-data
     shedlock: rentalapps-shedlock-data
+    users: rentalapps-users-data
 
 goldSign:
   MQ:
