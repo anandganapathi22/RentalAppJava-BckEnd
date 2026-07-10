@@ -12,7 +12,7 @@ import com.rentalapps.vo.CorrelationBean;
 import com.rentalapps.vo.AiCustomerQueryRequest;
 import com.rentalapps.vo.CustomerBean;
 import com.rentalapps.vo.CustomerBeanLite;
-import com.rentalapps.model.CwaMessageBean;
+import com.rentalapps.model.MessageBean;
 import com.rentalapps.vo.AiCustomerQueryResponse;
 import com.rentalapps.vo.LocaltimeBean;
 import com.rentalapps.model.Rental;
@@ -100,10 +100,10 @@ public class RentalAppsController {
       throw new NoContentException("No changes to update");
     }
     logger.info("PostAdhocChanges::Rental changes received:->{}", rentalBean);
-    CwaMessageBean cwaMessageBean = new CwaMessageBean();
-    cwaMessageBean.setRental(rentalBean);
+    MessageBean messageBean = new MessageBean();
+    messageBean.setRental(rentalBean);
     try {
-      customerDataService.persistData(locationId, cwaMessageBean);
+      customerDataService.persistData(locationId, messageBean);
     } catch (ApplicationException e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }

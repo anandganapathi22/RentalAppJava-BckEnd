@@ -18,7 +18,7 @@ import com.rentalapps.exception.ApplicationException;
 import com.rentalapps.vo.CorrelationBean;
 import com.rentalapps.vo.CustomerBean;
 import com.rentalapps.vo.CustomerBeanLite;
-import com.rentalapps.model.CwaMessageBean;
+import com.rentalapps.model.MessageBean;
 import com.rentalapps.model.EventType;
 import com.rentalapps.vo.LocaltimeBean;
 import java.io.IOException;
@@ -207,9 +207,9 @@ public class CustomerDataService {
    * Processes queue-sourced rental data: formats arrival dates and customer names
    * by region, then delegates to persistData for DB operations.
    */
-  public void persistQueueData(String locationCd, CwaMessageBean cwaMessageBean)
+  public void persistQueueData(String locationCd, MessageBean messageBean)
         throws IllegalArgumentException, IOException, ApplicationException {
-    cwaMessageBean.rental().stream().forEach(rental -> {
+    messageBean.rental().stream().forEach(rental -> {
       /* Process customer name received from the queue with update or delete action.
        * the customer name to be transformed to GB expected format "LastName F."
        */
@@ -223,17 +223,17 @@ public class CustomerDataService {
       logger.info("persistQueueData::" + rental.getAction() + "::" + rental.getCustomerName() 
           + "::" + rental.getArrivalDate());
     });
-    persistData(locationCd, cwaMessageBean);  
+    persistData(locationCd, messageBean);  
   }
 
   /**
    * Persists rental data to the database and records corresponding local events.
    */
-  public void persistData(String locationCd, CwaMessageBean cwaMessageBean)
+  public void persistData(String locationCd, MessageBean messageBean)
             throws IllegalArgumentException, IOException, ApplicationException {
 
-    logger.info("cwaMsBean::" + cwaMessageBean.toString());
-    cwaMessageBean.rental().stream()
+    logger.info("messageBean::" + messageBean.toString());
+    messageBean.rental().stream()
                 .forEach(
                         rental -> {
                     try {

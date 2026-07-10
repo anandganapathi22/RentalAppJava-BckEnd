@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.rentalapps.exception.ApplicationException;
-import com.rentalapps.model.CwaMessageBean;
+import com.rentalapps.model.MessageBean;
 import com.rentalapps.model.Rental;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -45,45 +45,45 @@ public class KafkaRentalEventService {
       return;
     }
 
-    CwaMessageBean cwaMessageBean = toCwaMessageBean(payload);
-    String locationCode = resolveLocationCode(cwaMessageBean, key, locationCodeHeader);
+    MessageBean messageBean = toMessageBean(payload);
+    String locationCode = resolveLocationCode(messageBean, key, locationCodeHeader);
     if (StringUtils.isBlank(locationCode)) {
       throw new IllegalArgumentException("Rental event must include locationCode, key, or locationCode header");
     }
 
     LOGGER.info("Persisting rental event from {} for location {}", source, locationCode);
-    customerDataService.persistQueueData(locationCode, cwaMessageBean);
+    customerDataService.persistQueueData(locationCode, messageBean);
   }
 
-  private CwaMessageBean toCwaMessageBean(String payload) throws IOException {
+  private MessageBean toMessageBean(String payload) throws IOException {
     String trimmedPayload = payload.trim();
     if (trimmedPayload.startsWith("<")) {
-      return xmlMapper.readValue(trimmedPayload, CwaMessageBean.class);
+      return xmlMapper.readValue(trimmedPayload, MessageBean.class);
     }
 
     JsonNode rootNode = objectMapper.readTree(trimmedPayload);
-    CwaMessageBean cwaMessageBean = new CwaMessageBean();
+    MessageBean messageBean = new MessageBean();
     JsonNode rentalNode = rootNode.has("rental") ? rootNode.get("rental") : rootNode;
 
     if (rentalNode.isArray()) {
       for (JsonNode item : rentalNode) {
-        cwaMessageBean.setRental(objectMapper.treeToValue(item, Rental.class));
+        messageBean.setRental(objectMapper.treeToValue(item, Rental.class));
       }
     } else {
-      cwaMessageBean.setRental(objectMapper.treeToValue(rentalNode, Rental.class));
+      messageBean.setRental(objectMapper.treeToValue(rentalNode, Rental.class));
     }
 
-    return cwaMessageBean;
+    return messageBean;
   }
 
-  private String resolveLocationCode(CwaMessageBean cwaMessageBean, String key, String headerLocationCode) {
+  private String resolveLocationCode(MessageBean messageBean, String key, String headerLocationCode) {
     return StringUtils.upperCase(StringUtils.trimToNull(
-        firstRentalLocation(cwaMessageBean, key, headerLocationCode)));
+        firstRentalLocation(messageBean, key, headerLocationCode)));
   }
 
-  private String firstRentalLocation(CwaMessageBean cwaMessageBean, String key, String headerLocationCode) {
-    if (cwaMessageBean != null && !cwaMessageBean.rental().isEmpty()) {
-      String rentalLocationCode = cwaMessageBean.rental().get(0).getLocationCode();
+  private String firstRentalLocation(MessageBean messageBean, String key, String headerLocationCode) {
+    if (messageBean != null && !messageBean.rental().isEmpty()) {
+      String rentalLocationCode = messageBean.rental().get(0).getLocationCode();
       if (StringUtils.isNotBlank(rentalLocationCode)) {
         return rentalLocationCode;
       }

@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import com.rentalapps.model.CwaMessageBean;
+import com.rentalapps.model.MessageBean;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +31,7 @@ class KafkaRentalEventServiceTest {
 
     service.process("rental-events-us", null, new RecordHeaders(), payload);
 
-    ArgumentCaptor<CwaMessageBean> captor = ArgumentCaptor.forClass(CwaMessageBean.class);
+    ArgumentCaptor<MessageBean> captor = ArgumentCaptor.forClass(MessageBean.class);
     verify(customerDataService).persistQueueData(eq("OKC11"), captor.capture());
     assertThat(captor.getValue().rental()).hasSize(1);
     assertThat(captor.getValue().rental().get(0).getCustomerName()).isEqualTo("Smith John");
@@ -56,7 +56,7 @@ class KafkaRentalEventServiceTest {
 
     service.process("rental-events-us", "okc11", new RecordHeaders(), payload);
 
-    ArgumentCaptor<CwaMessageBean> captor = ArgumentCaptor.forClass(CwaMessageBean.class);
+    ArgumentCaptor<MessageBean> captor = ArgumentCaptor.forClass(MessageBean.class);
     verify(customerDataService).persistQueueData(eq("OKC11"), captor.capture());
     assertThat(captor.getValue().rental()).hasSize(1);
     assertThat(captor.getValue().rental().get(0).getCustomerName()).isEqualTo("Smith John");

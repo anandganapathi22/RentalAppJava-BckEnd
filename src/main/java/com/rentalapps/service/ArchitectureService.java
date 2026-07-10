@@ -3,7 +3,7 @@ package com.rentalapps.service;
 import com.rentalapps.config.ApplicationConfig;
 import com.rentalapps.exception.ApplicationException;
 import com.rentalapps.exception.DatabaseException;
-import com.rentalapps.model.CwaMessageBean;
+import com.rentalapps.model.MessageBean;
 import com.rentalapps.model.Rental;
 import com.rentalapps.vo.ArchitectureAuditRecord;
 import com.rentalapps.vo.ArchitectureEventRecord;
@@ -93,7 +93,7 @@ public class ArchitectureService {
     rental.setArrivalDate(defaultValue(request.getArrivalDate(), "07/02/2026"));
     rental.setArrivalTime(defaultValue(request.getArrivalTime(), "10:00"));
 
-    CwaMessageBean message = new CwaMessageBean();
+    MessageBean message = new MessageBean();
     message.setRental(rental);
 
     increment(inboundTopic, request, rental, "Inbound event accepted");

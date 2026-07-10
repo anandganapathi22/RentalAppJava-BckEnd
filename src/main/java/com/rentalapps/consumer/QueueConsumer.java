@@ -3,7 +3,7 @@ package com.rentalapps.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.rentalapps.exception.ApplicationException;
-import com.rentalapps.model.CwaMessageBean;
+import com.rentalapps.model.MessageBean;
 import com.rentalapps.service.CustomerDataService;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,8 +26,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConditionalOnProperty(name = "goldSign.MQ.enabled", havingValue = "true", matchIfMissing = true)
-public class CwaQueueConsumer {
-  Logger logger = LoggerFactory.getLogger(CwaQueueConsumer.class);
+public class QueueConsumer {
+  Logger logger = LoggerFactory.getLogger(QueueConsumer.class);
 
   @Autowired
   public CustomerDataService customerDataService;
@@ -66,12 +66,12 @@ public class CwaQueueConsumer {
       logger.info("Extracted Payload is :: {}", xmlPayload);
 
       XmlMapper xmlMapper = new XmlMapper();
-      CwaMessageBean cwaMessageBean = xmlMapper.readValue(xmlPayload, CwaMessageBean.class);
-      logger.info("Value of cwaMessageBean->{}", cwaMessageBean);
+      MessageBean messageBean = xmlMapper.readValue(xmlPayload, MessageBean.class);
+      logger.info("Value of messageBean->{}", messageBean);
       logger.info("Initiating store data to DB flow");
-      customerDataService.persistQueueData(decodedCorrelationId, cwaMessageBean);
+      customerDataService.persistQueueData(decodedCorrelationId, messageBean);
     } catch (JsonProcessingException e) {
-      logger.error("JSON Processing Exception in CwaQueueConsumer", e);
+      logger.error("JSON Processing Exception in QueueConsumer", e);
     }
   }
 }

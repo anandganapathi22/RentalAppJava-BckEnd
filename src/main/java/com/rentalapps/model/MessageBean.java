@@ -2,13 +2,15 @@ package com.rentalapps.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlCData;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Bean representing a CWA XML message containing a list of rental operations.
  */
-public class CwaMessageBean {
+@JacksonXmlRootElement(localName = "CwaMessageBean")
+public class MessageBean {
   @JacksonXmlElementWrapper(localName = "rental")
   @JacksonXmlCData
   private final List<Rental> rental = new ArrayList<>();
@@ -26,7 +28,7 @@ public class CwaMessageBean {
 
   @Override
   public String toString() {
-    return "CWAMessageBean [rental=" + rental + "]";
+    return "MessageBean [rental=" + rental + "]";
   }
 
 }
