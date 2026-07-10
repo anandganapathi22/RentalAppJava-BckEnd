@@ -13,7 +13,7 @@ import org.springframework.beans.factory.ObjectProvider;
 class CustomerAiQueryServiceTest {
 
   @Test
-  void queryReturnsClearErrorWhenOpenAiChatModelIsDisabled() {
+  void queryReturnsClearErrorWhenChatModelIsDisabled() {
     CustomerDataService customerDataService = mock(CustomerDataService.class);
     ObjectProvider<ChatClient.Builder> chatClientBuilderProvider = mock(ObjectProvider.class);
     when(chatClientBuilderProvider.getIfAvailable()).thenReturn(null);
@@ -21,12 +21,13 @@ class CustomerAiQueryServiceTest {
     CustomerAiQueryService service = new CustomerAiQueryService(
         customerDataService,
         new ObjectMapper(),
-        chatClientBuilderProvider);
+        chatClientBuilderProvider,
+        "");
 
     IllegalStateException exception = assertThrows(
         IllegalStateException.class,
         () -> service.query("MNMIN10", "Who is assigned to stall 42?"));
 
-    assertEquals("OpenAI chat model is not enabled", exception.getMessage());
+    assertEquals("AI chat model is not enabled", exception.getMessage());
   }
 }

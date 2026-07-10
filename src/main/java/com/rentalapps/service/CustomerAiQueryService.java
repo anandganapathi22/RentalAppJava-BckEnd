@@ -4,34 +4,55 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rentalapps.vo.AiCustomerQueryResponse;
 import com.rentalapps.vo.CustomerBean;
+import com.rentalapps.vo.GbLocationRespObj;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /** Read-only AI query service for answering questions over customer stall data. */
 @Service
 public class CustomerAiQueryService {
   private static final String SYSTEM_PROMPT = """
-      You answer questions about rental customer stall assignments.
-      Use only the customer records supplied in the user message.
-      Do not invent customers, locations, stalls, rental agreement numbers, or arrival details.
-      If the supplied records do not contain the answer, say that the data provided does not show it.
-      Keep answers concise and include customer names and stalls when relevant.
+      You are the Rental Applications analytics assistant.
+      Answer questions about rental customer data, stall assignments, duplicates, errors, and exceptions.
+      Use only the database records and log excerpts supplied in the user message.
+      Do not invent customers, locations, stalls, rental agreement numbers, errors, exceptions, or timestamps.
+      If the supplied records or log excerpts do not contain the answer, say that the provided data does not show it.
+      Keep answers concise. Include customer names, stalls, rental agreements, and exception summaries when relevant.
       """;
+  private static final int MAX_CUSTOMERS_IN_PROMPT = 120;
+  private static final int MAX_LOG_LINES = 80;
 
   private final CustomerDataService customerDataService;
   private final ObjectMapper objectMapper;
   private final ObjectProvider<ChatClient.Builder> chatClientBuilderProvider;
+  private final List<String> logPaths;
 
   public CustomerAiQueryService(CustomerDataService customerDataService,
                                 ObjectMapper objectMapper,
-                                ObjectProvider<ChatClient.Builder> chatClientBuilderProvider) {
+                                ObjectProvider<ChatClient.Builder> chatClientBuilderProvider,
+                                @Value("${rental.analytics.log-paths:backend.err.log,backend.out.log}")
+                                String logPaths) {
     this.customerDataService = customerDataService;
     this.objectMapper = objectMapper;
     this.chatClientBuilderProvider = chatClientBuilderProvider;
+    this.logPaths = Stream.of(StringUtils.defaultString(logPaths).split(","))
+        .map(StringUtils::trimToNull)
+        .filter(Objects::nonNull)
+        .toList();
   }
 
   public AiCustomerQueryResponse query(String locationId, String question) throws IOException {
@@ -42,23 +63,32 @@ public class CustomerAiQueryService {
       throw new IllegalArgumentException("question is required");
     }
 
-    ChatClient.Builder chatClientBuilder = chatClientBuilderProvider.getIfAvailable();
+    ChatClient.Builder chatClientBuilder = getChatClientBuilder();
     if (chatClientBuilder == null) {
-      throw new IllegalStateException("OpenAI chat model is not enabled");
+      throw new IllegalStateException("AI chat model is not enabled");
     }
 
     List<CustomerBean> customers = customerDataService.getRentalAppsData2(locationId.trim());
-    String customerJson = toJson(customers);
+    List<GbLocationRespObj> matchingLocations = getMatchingLocations(locationId.trim());
+    List<String> logLines = readRelevantLogLines();
+    String analyticsContext = buildAnalyticsContext(locationId.trim(), customers, matchingLocations, logLines);
+    String customerJson = toJson(limitCustomers(customers));
     String answer = chatClientBuilder.build()
         .prompt()
         .system(SYSTEM_PROMPT)
         .user("""
             Location ID: %s
+            Analytics context:
+            %s
+
             Customer records JSON:
             %s
 
+            Relevant recent log lines:
+            %s
+
             Question: %s
-            """.formatted(locationId.trim(), customerJson, question.trim()))
+            """.formatted(locationId.trim(), analyticsContext, customerJson, String.join("\n", logLines), question.trim()))
         .call()
         .content();
 
@@ -67,7 +97,95 @@ public class CustomerAiQueryService {
     response.setQuestion(question.trim());
     response.setAnswer(StringUtils.trimToEmpty(answer));
     response.setRecordsUsed(customers.size());
+    response.setLogEventsUsed(logLines.size());
     return response;
+  }
+
+  private ChatClient.Builder getChatClientBuilder() {
+    try {
+      return chatClientBuilderProvider.getIfAvailable();
+    } catch (BeansException e) {
+      return null;
+    }
+  }
+
+  private List<GbLocationRespObj> getMatchingLocations(String locationId) {
+    try {
+      return customerDataService.getLocations().stream()
+          .filter(location -> StringUtils.equalsIgnoreCase(location.getHertzLocationCode(), locationId))
+          .toList();
+    } catch (Exception e) {
+      return List.of();
+    }
+  }
+
+  private String buildAnalyticsContext(String locationId,
+                                       List<CustomerBean> customers,
+                                       List<GbLocationRespObj> locations,
+                                       List<String> logLines) throws JsonProcessingException {
+    long assignedStalls = customers.stream().filter(customer -> StringUtils.isNotBlank(customer.getStall())).count();
+    long missingStalls = customers.size() - assignedStalls;
+    long missingNames = customers.stream().filter(customer -> StringUtils.isBlank(customer.getCustomerName())).count();
+    List<Map.Entry<String, Long>> duplicateRentalAgreements = customers.stream()
+        .map(CustomerBean::getRa)
+        .map(StringUtils::trimToNull)
+        .filter(Objects::nonNull)
+        .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+        .entrySet()
+        .stream()
+        .filter(entry -> entry.getValue() > 1)
+        .sorted(Map.Entry.comparingByKey())
+        .toList();
+
+    Map<String, Object> context = Map.of(
+        "locationId", locationId,
+        "location", locations.isEmpty() ? Map.of() : locations.get(0),
+        "totalCustomers", customers.size(),
+        "assignedStalls", assignedStalls,
+        "missingStalls", missingStalls,
+        "missingCustomerNames", missingNames,
+        "duplicateRentalAgreements", duplicateRentalAgreements,
+        "logEventsIncluded", logLines.size()
+    );
+
+    return objectMapper.writeValueAsString(context);
+  }
+
+  private List<CustomerBean> limitCustomers(List<CustomerBean> customers) {
+    if (customers.size() <= MAX_CUSTOMERS_IN_PROMPT) {
+      return customers;
+    }
+
+    return customers.subList(0, MAX_CUSTOMERS_IN_PROMPT);
+  }
+
+  private List<String> readRelevantLogLines() {
+    return logPaths.stream()
+        .map(Path::of)
+        .filter(Files::isRegularFile)
+        .flatMap(this::safeReadLines)
+        .filter(this::isRelevantLogLine)
+        .sorted(Comparator.reverseOrder())
+        .limit(MAX_LOG_LINES)
+        .sorted()
+        .toList();
+  }
+
+  private Stream<String> safeReadLines(Path path) {
+    try {
+      return Files.readAllLines(path).stream()
+          .map(line -> "%s: %s".formatted(path.getFileName(), line));
+    } catch (IOException e) {
+      return Stream.empty();
+    }
+  }
+
+  private boolean isRelevantLogLine(String line) {
+    String normalizedLine = line.toLowerCase();
+    return normalizedLine.contains("error")
+        || normalizedLine.contains("exception")
+        || normalizedLine.contains("warn")
+        || normalizedLine.contains("failed");
   }
 
   private String toJson(List<CustomerBean> customers) throws JsonProcessingException {

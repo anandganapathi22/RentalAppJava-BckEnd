@@ -6,6 +6,7 @@ public class AiCustomerQueryResponse {
   private String question;
   private String answer;
   private int recordsUsed;
+  private int logEventsUsed;
 
   public String getLocationId() {
     return locationId;
@@ -37,5 +38,13 @@ public class AiCustomerQueryResponse {
 
   public void setRecordsUsed(int recordsUsed) {
     this.recordsUsed = recordsUsed;
+  }
+
+  public int getLogEventsUsed() {
+    return logEventsUsed;
+  }
+
+  public void setLogEventsUsed(int logEventsUsed) {
+    this.logEventsUsed = logEventsUsed;
   }
 }

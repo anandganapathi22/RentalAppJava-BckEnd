@@ -19,6 +19,11 @@ spring:
       chat:
         options:
           model: ${OPENAI_MODEL:gpt-4o-mini}
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${OLLAMA_MODEL:llama3.1}
   datasource:
     url: jdbc:h2:file:G:/rental-applications/data/rentalapps-db;MODE=PostgreSQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
