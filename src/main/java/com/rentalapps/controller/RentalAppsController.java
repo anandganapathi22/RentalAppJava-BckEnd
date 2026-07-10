@@ -118,7 +118,7 @@ public class RentalAppsController {
       throws IOException {
     try {
       AiCustomerQueryResponse response =
-          customerAiQueryService.query(request.getLocationId(), request.getQuestion());
+          customerAiQueryService.query(request.getLocationId(), request.getQuestion(), request.getModelProvider());
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (IllegalArgumentException e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

@@ -4,6 +4,7 @@ package com.rentalapps.vo;
 public class AiCustomerQueryResponse {
   private String locationId;
   private String question;
+  private String modelProvider;
   private String answer;
   private int recordsUsed;
   private int logEventsUsed;
@@ -22,6 +23,14 @@ public class AiCustomerQueryResponse {
 
   public void setQuestion(String question) {
     this.question = question;
+  }
+
+  public String getModelProvider() {
+    return modelProvider;
+  }
+
+  public void setModelProvider(String modelProvider) {
+    this.modelProvider = modelProvider;
   }
 
   public String getAnswer() {
