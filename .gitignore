@@ -5,6 +5,8 @@ target/
 target/codeql/
 .jenkins/
 data/*.db
+data/*.mv.db
+data/logs/*.log
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

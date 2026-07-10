@@ -37,6 +37,7 @@ public class CustomerAiQueryService {
       """;
   private static final int MAX_CUSTOMERS_IN_PROMPT = 120;
   private static final int MAX_LOG_LINES = 80;
+  private static final int MAX_LOG_LINES_IN_DIRECT_ANSWER = 12;
 
   private final CustomerDataService customerDataService;
   private final ObjectMapper objectMapper;
@@ -67,6 +68,17 @@ public class CustomerAiQueryService {
 
     String requestedLocationId = locationId.trim();
     String trimmedQuestion = question.trim();
+
+    if (isLogQuestion(trimmedQuestion)) {
+      List<String> logLines = readRelevantLogLines();
+      return createResponse(
+          requestedLocationId,
+          trimmedQuestion,
+          createLogAnswer(logLines),
+          0,
+          logLines.size());
+    }
+
     List<GbLocationRespObj> locations = getLocationsSafely();
     String effectiveLocationId = findMentionedLocationId(trimmedQuestion, locations).orElse(requestedLocationId);
     List<CustomerBean> customers = customerDataService.getRentalAppsData2(effectiveLocationId);
@@ -169,6 +181,40 @@ public class CustomerAiQueryService {
         || normalizedQuestion.contains("records");
 
     return asksForCount && targetsCustomers;
+  }
+
+  private boolean isLogQuestion(String question) {
+    String normalizedQuestion = question.toLowerCase(Locale.ROOT);
+    boolean asksAboutLogs = normalizedQuestion.contains("log")
+        || normalizedQuestion.contains("logs")
+        || normalizedQuestion.contains("backend")
+        || normalizedQuestion.contains("docker");
+    boolean asksAboutProblems = normalizedQuestion.contains("error")
+        || normalizedQuestion.contains("errors")
+        || normalizedQuestion.contains("exception")
+        || normalizedQuestion.contains("exceptions")
+        || normalizedQuestion.contains("warn")
+        || normalizedQuestion.contains("warning")
+        || normalizedQuestion.contains("failed")
+        || normalizedQuestion.contains("failure");
+
+    return asksAboutLogs && asksAboutProblems;
+  }
+
+  private String createLogAnswer(List<String> logLines) {
+    if (logLines.isEmpty()) {
+      return "No readable backend error, warning, exception, or failure log lines were found in the configured analytics log paths.";
+    }
+
+    List<String> recentLines = logLines.stream()
+        .skip(Math.max(0, logLines.size() - MAX_LOG_LINES_IN_DIRECT_ANSWER))
+        .toList();
+
+    return "Yes. I found %d relevant backend log lines. Recent entries:%n%s".formatted(
+        logLines.size(),
+        recentLines.stream()
+            .map(line -> "- " + line)
+            .collect(Collectors.joining(System.lineSeparator())));
   }
 
   private String buildAnalyticsContext(String locationId,

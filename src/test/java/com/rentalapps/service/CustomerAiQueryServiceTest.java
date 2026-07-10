@@ -2,6 +2,7 @@ package com.rentalapps.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -9,12 +10,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rentalapps.vo.AiCustomerQueryResponse;
 import com.rentalapps.vo.CustomerBean;
 import com.rentalapps.vo.GbLocationRespObj;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.ObjectProvider;
 
 class CustomerAiQueryServiceTest {
+
+  @TempDir
+  Path tempDir;
 
   @Test
   void queryReturnsClearErrorWhenChatModelIsDisabled() {
@@ -60,5 +67,34 @@ class CustomerAiQueryServiceTest {
     assertEquals("CASFO15", response.getLocationId());
     assertEquals("CASFO15 has 2 customer records.", response.getAnswer());
     assertEquals(2, response.getRecordsUsed());
+  }
+
+  @Test
+  void queryAnswersBackendLogQuestionWithoutCallingAiModel() throws Exception {
+    Path logFile = tempDir.resolve("backend.log");
+    Files.write(logFile, List.of(
+        "2026-07-10 INFO Started RentalAppsListenerApplication",
+        "2026-07-10 ERROR Application run failed",
+        "Caused by: org.h2.mvstore.MVStoreException: The file is locked"));
+
+    CustomerDataService customerDataService = mock(CustomerDataService.class);
+    ObjectProvider<ChatClient.Builder> chatClientBuilderProvider = mock(ObjectProvider.class);
+    when(chatClientBuilderProvider.getIfAvailable()).thenReturn(null);
+
+    CustomerAiQueryService service = new CustomerAiQueryService(
+        customerDataService,
+        new ObjectMapper(),
+        chatClientBuilderProvider,
+        logFile.toString());
+
+    AiCustomerQueryResponse response = service.query(
+        "AZPHO11",
+        "are there any errors in the docker back end logs?");
+
+    assertEquals("AZPHO11", response.getLocationId());
+    assertEquals(0, response.getRecordsUsed());
+    assertEquals(2, response.getLogEventsUsed());
+    assertTrue(response.getAnswer().contains("Application run failed"));
+    assertTrue(response.getAnswer().contains("The file is locked"));
   }
 }
