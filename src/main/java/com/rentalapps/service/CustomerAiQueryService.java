@@ -10,8 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,16 +65,32 @@ public class CustomerAiQueryService {
       throw new IllegalArgumentException("question is required");
     }
 
+    String requestedLocationId = locationId.trim();
+    String trimmedQuestion = question.trim();
+    List<GbLocationRespObj> locations = getLocationsSafely();
+    String effectiveLocationId = findMentionedLocationId(trimmedQuestion, locations).orElse(requestedLocationId);
+    List<CustomerBean> customers = customerDataService.getRentalAppsData2(effectiveLocationId);
+    List<GbLocationRespObj> matchingLocations = locations.stream()
+        .filter(location -> StringUtils.equalsIgnoreCase(location.getHertzLocationCode(), effectiveLocationId))
+        .toList();
+
+    if (isCustomerCountQuestion(trimmedQuestion)) {
+      return createResponse(
+          effectiveLocationId,
+          trimmedQuestion,
+          "%s has %d customer records.".formatted(effectiveLocationId, customers.size()),
+          customers.size(),
+          0);
+    }
+
+    List<String> logLines = readRelevantLogLines();
+    String analyticsContext = buildAnalyticsContext(effectiveLocationId, customers, matchingLocations, logLines);
+    String customerJson = toJson(limitCustomers(customers));
     ChatClient.Builder chatClientBuilder = getChatClientBuilder();
     if (chatClientBuilder == null) {
       throw new IllegalStateException("AI chat model is not enabled");
     }
 
-    List<CustomerBean> customers = customerDataService.getRentalAppsData2(locationId.trim());
-    List<GbLocationRespObj> matchingLocations = getMatchingLocations(locationId.trim());
-    List<String> logLines = readRelevantLogLines();
-    String analyticsContext = buildAnalyticsContext(locationId.trim(), customers, matchingLocations, logLines);
-    String customerJson = toJson(limitCustomers(customers));
     String answer = chatClientBuilder.build()
         .prompt()
         .system(SYSTEM_PROMPT)
@@ -88,16 +106,29 @@ public class CustomerAiQueryService {
             %s
 
             Question: %s
-            """.formatted(locationId.trim(), analyticsContext, customerJson, String.join("\n", logLines), question.trim()))
+            """.formatted(effectiveLocationId, analyticsContext, customerJson, String.join("\n", logLines), trimmedQuestion))
         .call()
         .content();
 
+    return createResponse(
+        effectiveLocationId,
+        trimmedQuestion,
+        StringUtils.trimToEmpty(answer),
+        customers.size(),
+        logLines.size());
+  }
+
+  private AiCustomerQueryResponse createResponse(String locationId,
+                                                 String question,
+                                                 String answer,
+                                                 int recordsUsed,
+                                                 int logEventsUsed) {
     AiCustomerQueryResponse response = new AiCustomerQueryResponse();
-    response.setLocationId(locationId.trim());
-    response.setQuestion(question.trim());
-    response.setAnswer(StringUtils.trimToEmpty(answer));
-    response.setRecordsUsed(customers.size());
-    response.setLogEventsUsed(logLines.size());
+    response.setLocationId(locationId);
+    response.setQuestion(question);
+    response.setAnswer(answer);
+    response.setRecordsUsed(recordsUsed);
+    response.setLogEventsUsed(logEventsUsed);
     return response;
   }
 
@@ -109,14 +140,35 @@ public class CustomerAiQueryService {
     }
   }
 
-  private List<GbLocationRespObj> getMatchingLocations(String locationId) {
+  private List<GbLocationRespObj> getLocationsSafely() {
     try {
-      return customerDataService.getLocations().stream()
-          .filter(location -> StringUtils.equalsIgnoreCase(location.getHertzLocationCode(), locationId))
-          .toList();
+      return customerDataService.getLocations();
     } catch (Exception e) {
       return List.of();
     }
+  }
+
+  private Optional<String> findMentionedLocationId(String question, List<GbLocationRespObj> locations) {
+    String normalizedQuestion = question.toUpperCase(Locale.ROOT);
+    return locations.stream()
+        .map(GbLocationRespObj::getHertzLocationCode)
+        .map(StringUtils::trimToNull)
+        .filter(Objects::nonNull)
+        .filter(locationCode -> normalizedQuestion.contains(locationCode.toUpperCase(Locale.ROOT)))
+        .findFirst();
+  }
+
+  private boolean isCustomerCountQuestion(String question) {
+    String normalizedQuestion = question.toLowerCase(Locale.ROOT);
+    boolean asksForCount = normalizedQuestion.contains("how many")
+        || normalizedQuestion.contains("count")
+        || normalizedQuestion.contains("number of")
+        || normalizedQuestion.contains("total");
+    boolean targetsCustomers = normalizedQuestion.contains("customer")
+        || normalizedQuestion.contains("customers")
+        || normalizedQuestion.contains("records");
+
+    return asksForCount && targetsCustomers;
   }
 
   private String buildAnalyticsContext(String locationId,
