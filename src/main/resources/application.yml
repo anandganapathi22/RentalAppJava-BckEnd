@@ -73,10 +73,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, data-caches, env, info
+        include: health, info, env, mappings
   endpoint:
-    keysToSanitize: password, secret
-    regexPatterns: ['*', '$', '^', '+']
+    health:
+      show-details: when-authorized
     env:
       show-values: always
 com.hertz.digital.msf:

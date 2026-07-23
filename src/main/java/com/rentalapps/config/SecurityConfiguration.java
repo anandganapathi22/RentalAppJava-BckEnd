@@ -44,7 +44,8 @@ public class SecurityConfiguration {
       throws Exception {
     http.authorizeHttpRequests((authz) -> authz
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/auth/login", "/actuator/health", "/actuator/info", "/h2-console/**").permitAll()
+            .requestMatchers("/auth/login", "/actuator/health", "/actuator/info", "/actuator/mappings",
+                "/h2-console/**").permitAll()
             .anyRequest().authenticated())
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
